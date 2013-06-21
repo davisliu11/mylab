@@ -1,0 +1,34 @@
+#!/bin/sh
+
+ALERTHOUR="9"
+
+ERRORFILTER="\[NixUtil_openFileN\] No such file or directory"
+
+if [ "`date +%H`" = "$ALERTHOUR" ]; then
+	critHour=1
+else
+	critHour=0
+fi
+
+if [ "`find /usr/local/obm/log/ -name obm.log -mtime -1`" = "" ]; then
+	echo "Old or missing obm.log"
+
+	if [ "$critHour" = "1" ] ; then
+		exit 2;
+	else
+		exit 1;
+	fi
+else
+	if [ "`tail -n 3 /usr/local/obm/log/obm.log | grep -ic "Backup completed"`" = "0" ] || \
+			[ ! "`cat /usr/local/obm/log/obm.log | egrep -v "$ERRORFILTER" | grep -c "\[Error\]"`" = "0" ]; then
+		echo "Backup log content error"
+		if [ "$critHour" = "1" ]; then
+			exit 2;
+		else
+			exit 1;
+		fi
+	else
+		echo "OK"
+		exit 0;
+	fi
+fi

@@ -1,0 +1,55 @@
+#!/bin/sh
+
+. /home/wdsupport/sbin/_functions
+
+RECURSIVE=0
+
+# Defines ARG array based on arguments
+for var in "$@"; do
+	case $var in
+	"-R")
+		RECURSIVE=1
+		;;
+	*)
+		# Load arguments into an array
+		ARG[${#ARG[@]}]=$var
+		;;
+	esac
+done
+
+element_count=${#ARG[@]}
+
+if [ ! "$element_count" = "2" ]; then
+	echo "Usage: sudo-chown [-R] user[:group] object"
+	echo
+	exit	
+fi
+
+chownStrOut="`isChownStr ${ARG[0]}`"
+
+if [ "$?" = "0" ]; then
+	echo "$chownStrOut"
+	echo "Invalid chown owner. Exiting."
+	echo
+	exit
+else
+	chownStr="$chownStrOut"
+fi
+
+vhostPathOut="`isVhostPath ${ARG[1]}`"
+
+if [ "$?" = "0" ]; then
+	echo "$vhostPathOut"
+	echo "Invalid vhost path. Exiting."
+	echo
+	exit
+else
+	vhostPath="$vhostPathOut"
+fi
+
+chown="chown"
+if [ "$RECURSIVE" = "1" ]; then
+	chown="$chown -R"
+fi
+
+$chown $chownStr $vhostPath

@@ -1,0 +1,3 @@
+# WEBHOST-MGMT-BASE: /etc/sudoers.d/nrpe-check_fs
+ALL ALL=NOPASSWD: /opt/cloudsites/bin/cloudsites-access-fs-move-mount.sh
+# /WEBHOST-MGMT-BASE: /etc/sudoers.d/nrpe-check_fs

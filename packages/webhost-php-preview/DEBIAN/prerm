@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Remove pinholes from firewall
+if [ -f /etc/network/firewall ]; then
+	if [ "`egrep -c '\\$I -p tcp --dport 4433 -j ACCEPT   # webhost-php-preview' /etc/network/firewall`" != "0" ]; then
+		sed -i '/\$I -p tcp --dport 4433 -j ACCEPT   # webhost-php-preview/d' /etc/network/firewall
+	fi
+	if [ "`egrep -c '\\$I -p tcp --dport 8080 -j ACCEPT   # webhost-php-preview' /etc/network/firewall`" != "0" ]; then
+		sed -i '/\$I -p tcp --dport 8080 -j ACCEPT   # webhost-php-preview/d' /etc/network/firewall
+	fi
+fi
+
+# Stop the preview service
+/etc/init.d/webhost-php-preview stop
+/usr/sbin/update-rc.d -f webhost-php-preview remove
+
+# Remove the preview directory
+rm -fr /etc/webhost-apache2-preview

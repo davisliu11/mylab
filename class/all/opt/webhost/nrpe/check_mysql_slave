@@ -1,0 +1,68 @@
+#!/usr/bin/php
+<?php
+/*
+Requires sudo support e.g.
+
+User_Alias NAGIOS = nagios
+Cmnd_Alias NAGIOS_EXEC = /opt/webhost/nrpe/nrpe_check_mysql_slave
+Defaults:NAGIOS !lecture
+Defaults:NAGIOS !authenticate
+Defaults@ALL  log_year, logfile=/var/log/sudo.log
+NAGIOS ALL=NOPASSWD: NAGIOS_EXEC
+*/
+
+$mysqlINI = parse_ini_file ( "/root/.my.cnf" );
+if (!isset($mysqlINI["user"])) {
+	echo "No user defined in .my.cnf";
+	exit(1);
+}
+
+if (!isset($mysqlINI["password"])) {
+	echo "No password defined in .my.cnf";
+	exit(1);
+}
+
+// Process switches
+while (true) {
+        switch($argv[0]) {
+                case "-w":
+                case "--warning":
+                        array_shift($argv);
+                        $warningSec = preg_replace("/[^0-9]/","",$argv[0]);
+                        break;
+                case "-c":
+                case "--critical":
+                        array_shift($argv);
+                        $criticalSec = preg_replace("/[^0-9]/","",$argv[0]);
+                        break;
+        }
+        array_shift($argv);
+        if (count($argv)==0) break;
+}
+
+if (!isset($warningSec)) $warningSec = 600;
+if (!isset($criticalSec)) $criticalSec = 4000;
+
+$cmd = "/usr/lib/nagios/plugins/check_mysql -S -u ".$mysqlINI["user"]." -p ".$mysqlINI["password"]." -w ".escapeshellarg($warningSec)." -c ".escapeshellarg($criticalSec);
+
+$descriptorspec = array(
+   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+   2 => array("pipe", "r")
+);
+
+$process = proc_open($cmd,$descriptorspec,$pipes);
+
+fclose($pipes[0]);
+
+$result = stream_get_contents($pipes[1]);
+echo $result;
+fclose($pipes[1]);
+
+$return_value = proc_close($process);
+
+if ($return_value != 0 && trim($result) == "No slaves defined")
+        $return_value = 0;
+
+exit($return_value);
+?>

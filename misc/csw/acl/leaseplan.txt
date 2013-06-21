@@ -1,0 +1,163 @@
+interface Vlan292
+...
+ ip access-group CUSTFW-VL292-UP in
+ ip access-group CUSTFW-VL292-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL292-DOWN
+no ip access-list extended CUSTFW-VL292-UP
+
+ip access-list extended CUSTFW-VL292-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp host 119.47.119.40 eq 1688 any established
+ permit tcp any eq 8443 host 119.47.125.19 established
+ permit tcp any eq 80 any established
+ permit tcp any eq 25 any established
+ !ref #COS-620684
+ permit tcp any eq 8089 host 119.47.125.18 established 
+ 
+ 
+
+ !inbound ports
+ !ref #FEZ-155511
+ permit tcp host 60.234.54.114 host 119.47.125.17 eq 80
+ permit tcp host 202.89.53.241 host 119.47.125.17 eq 80
+ permit tcp host 210.48.79.181 host 119.47.125.17 eq 80
+ permit tcp host 60.234.49.34 host 119.47.125.17 eq 80
+ permit tcp host 210.48.101.241 host 119.47.125.17 eq 80
+ permit tcp host 210.48.120.253 host 119.47.125.17 eq 80
+ permit tcp host 203.166.126.12 host 119.47.125.17 eq 80
+
+ permit tcp host 60.234.54.114 host 119.47.125.17 eq 443
+ permit tcp host 202.89.53.241 host 119.47.125.17 eq 443
+ permit tcp host 210.48.79.181 host 119.47.125.17 eq 443
+ permit tcp host 60.234.49.34 host 119.47.125.17 eq 443
+ permit tcp host 210.48.101.241 host 119.47.125.17 eq 443
+ permit tcp host 210.48.120.253 host 119.47.125.17 eq 443
+ permit tcp host 203.166.126.12 host 119.47.125.17 eq 443
+
+ permit tcp any host 119.47.125.18 eq 80
+
+ !inbound selective networks for rdp and ftp
+ permit tcp any any eq 3389
+ permit tcp any host 119.47.125.17 eq 21
+ permit tcp any host 119.47.125.17 range 9500 9510
+ permit tcp any host 119.47.125.18 eq 21
+ permit tcp any host 119.47.125.18 range 9500 9510
+ ! ref:  #COS-620684
+ permit tcp host 203.89.187.194 host 119.47.125.19 eq 21
+ permit tcp host 203.89.187.194 host 119.47.125.19 range 9500 9510
+ !SQL Server manager
+ permit tcp host 121.73.237.58 host 119.47.125.19 eq 1433
+ permit tcp host 203.166.126.12 host 119.47.125.19 eq 1433
+ permit tcp host 124.198.149.147 host 119.47.125.19 eq 1433
+ !ref: #BWX-875830
+ permit tcp host 210.48.101.241 host 119.47.125.19 eq 1433
+ !ref: #KMG-969031
+ permit ip host 49.50.247.13 host 119.47.125.17
+ 
+
+ !monitoring
+ permit tcp host 202.89.43.31 any eq 5666 
+ permit tcp host 119.47.119.31 any eq 5666 
+ permit tcp host 202.89.43.31 any eq 22
+ permit tcp host 119.47.119.31 any eq 22
+ permit tcp host 202.89.43.31 any eq 3389
+ permit tcp host 119.47.119.31 any eq 3389
+
+ !webdrive ssh/rdp
+ permit tcp host 119.47.119.238 any eq 22
+ permit tcp host 119.47.119.239 any eq 22
+ permit tcp 172.16.253.0 0.0.0.255 any eq 3389
+
+ !explicit deny for anything not matching ssh/rdp
+ deny tcp any any eq 22
+ deny tcp any any eq 3389
+     
+ !vpn addresses - access to everything not explicitly blocked
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ deny   ip any any
+exit
+
+ip access-list extended CUSTFW-VL292-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any host 119.47.119.40 eq 1688
+ permit tcp host 119.47.125.19 any eq 8443
+ permit tcp any any eq 25
+ permit tcp any any eq 80
+ !ref #COS-620684
+ permit tcp host 119.47.125.18 any eq 8089 
+
+ 
+ !inbound ports
+ permit tcp host 119.47.125.17 eq 80 any established
+ permit tcp host 119.47.125.17 eq 443 any established
+ permit tcp host 119.47.125.18 eq 80 any established
+
+ !inbound selective networks for rdp and ftp
+ permit tcp any eq 3389 any established
+ permit tcp host 119.47.125.17 eq 21 any established
+ permit tcp host 119.47.125.17 range 9500 9510 any established
+ permit tcp host 119.47.125.18 eq 21 any established
+ permit tcp host 119.47.125.18 range 9500 9510 any established
+ ! ref:  #COS-620684
+ permit tcp host 119.47.125.19 eq 21 host 203.89.187.194 established
+ permit tcp host 119.47.125.19 range 9500 9510 host 203.89.187.194 established
+ !SQL Server manager
+ permit tcp host 119.47.125.19 eq 1433 host 121.73.237.58 established
+ permit tcp host 119.47.125.19 eq 1433 host 203.166.126.12 established
+ permit tcp host 119.47.125.19 eq 1433 host 124.198.149.147 established
+ !ref: #BWX-875830
+ permit tcp host 119.47.125.19 eq 1433 host 210.48.101.241 established
+ !ref: #KMG-969031
+ permit ip host 119.47.125.17 host 49.50.247.13
+
+ !monitoring
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 5666 host 119.47.119.31 established
+ permit tcp any eq 22 host 202.89.43.31 established
+ permit tcp any eq 22 host 119.47.119.31 established
+ permit tcp any eq 3389 host 202.89.43.31 established
+ permit tcp any eq 3389 host 119.47.119.31 established
+
+ !web drive ssh/rdp
+ permit tcp any eq 22 host 119.47.119.238 established
+ permit tcp any eq 22 host 119.47.119.239 established
+ permit tcp any eq 3389 172.16.253.0 0.0.0.255 established
+ 
+ !explicit deny for anything not matching for ssh/rdp
+ deny tcp any eq 22 any established 
+ deny tcp any eq 3389 any established 
+   
+ !vpn addresses - access everything not explicitly blocked.
+ permit ip any 172.16.253.0 0.0.0.255
+
+ deny   ip any any
+exit
+end

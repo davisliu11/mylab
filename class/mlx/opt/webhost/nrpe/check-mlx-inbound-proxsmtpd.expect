@@ -1,0 +1,67 @@
+#!/usr/bin/expect -f
+#
+set force_conservative 0  ;# set to 1 to force conservative mode even if
+                          ;# script wasn't run conservatively originally
+if {$force_conservative} {
+        set send_slow {1 .1}
+        proc send {ignore arg} {
+                sleep .1
+                exp_send -s -- $arg
+        }
+}
+
+proc do_msg {msg} {
+    puts stderr $msg
+}
+
+set timeout 15
+
+spawn telnet 127.0.0.1 10025
+expect {
+   default {do_msg "error during connection...:"; exit 1}
+   "220 smtp.passthru"
+}
+
+send -- "EHLO localhost\r"
+
+expect {
+   timeout {do_msg "timed out waiting for reply"; exit 2}
+   "250 DSN"
+}
+
+send -- "MAIL FROM:<null@webhost.co.nz>\r"
+
+expect {
+    default {do_msg "timeout after sending From:" ; exit 2}
+    "250 2.1.0 Ok"
+}
+
+send -- "RCPT TO:<null@webhost.co.nz>\r"
+
+expect {
+	default {do_msg "timeout after sending To:" ; exit 2}
+	"250 2.1.5 Ok"
+}
+
+send -- "DATA\r"
+
+expect {
+	default {do_msg "timeout after sending DATA" ; exit 2}
+	"354 Start mail input; end with <CRLF>.<CRLF>"
+}
+
+send -- "To: null@webhost.co.nz\rFrom: null@webhost.co.nz\rSubject: test\r\rTest\r.\r"
+
+expect {
+	default {do_msg "timeout after sending email" ; exit 2}
+	"250 2.0.0 Ok"
+}
+
+send -- "quit\r"
+
+expect {
+	default {do_msg "timeout after sending quit" ; exit 2}
+	"Connection closed by foreign host."
+}
+
+exit 0

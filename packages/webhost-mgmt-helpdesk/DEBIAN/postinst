@@ -1,0 +1,141 @@
+#!/bin/bash
+
+# Ensure sudo configuration includes are chmod 0440
+chmod 0440 /etc/sudoers.d/*
+
+# Remove previous sudoers content relating to wdsupport - it's now handled by a dedicated file inside includedir
+sed -i '/TIER1/,/^$/d' /etc/sudoers
+
+# Determine sudo version, and put configuration includes into main file, due to lack of include support in sudo<1.7.2.
+sudoversion="`dpkg-query -W -f='${Version}\n' sudo`"
+result="`dpkg --compare-versions $sudoversion gt 1.7.2`"
+if [ $? -ne 0 ]; then
+        # remove anything from main file, between 'webhost-mgmt-helpdesk' and '/webhost-mgmt-helpdesk'
+        sed -i '/WEBHOST-MGMT-HELPDESK/,/\/WEBHOST-MGMT-HELPDESK/d' /etc/sudoers
+
+        # foreach file in sudoers.d, echo header, content, footer into main file.
+        for FILE in `find /etc/sudoers.d/ -type f`; do
+		if [ "`grep -c WEBHOST-MGMT-HELPDESK $FILE`" -gt 0 ]; then
+                	cat $FILE >> /etc/sudoers
+		fi
+        done
+fi
+
+# Ensure sudo has the correct syntax, otherwise move main file out of the way, and copy fallback
+result="`visudo -c 2>&1`"
+if [ $? -ne 0 ]; then
+        mv -f /etc/sudoers /etc/sudoers.ori
+        cp -f /opt/webhost/sudoers.fallback /etc/sudoers
+        chown root.root /etc/sudoers
+        chmod 0440 /etc/sudoers
+        # alert serverwatch that sudo has an incorrect configuration
+echo -e "Sudo configuration check error. Triggered switch to fallback configuration.
+
+Output: $result
+
+Main file content:
+`cat /etc/sudoers`" | mail -s "WEBHOST-MGMT-HELPDESK: Sudo configuration error on `cat /opt/webhost/asset`" serverwatch@webdrive.co.nz
+fi
+
+# Ensure correct permissions for wdsupport home folder
+if [ -f "/home/wdsupport/.mgmt" ]; then
+        chattr -i /home/wdsupport/.mgmt
+fi
+chown wdsupport.wdsupport -R /home/wdsupport
+chown root.root -R /home/wdsupport/sbin
+
+chmod 700 /home/wdsupport
+chmod 500 -R /home/wdsupport/bin
+
+chmod 700 -R /home/wdsupport/sbin
+chmod 600 /home/wdsupport/sbin/_functions
+
+# Touch a lock file to ensure removal (happens on preinst) of the user and folder only happens once
+if [ ! -f "/home/wdsupport/.mgmt" ]; then
+        touch /home/wdsupport/.mgmt
+        chown wdsupport.wdsupport /home/wdsupport/.mgmt
+        chattr +i /home/wdsupport/.mgmt
+else
+        chattr +i /home/wdsupport/.mgmt
+fi
+
+### Remove previous webdrive helpdesk staff keys from root
+if [ -f "/root/.ssh/authorized_keys" ]; then
+	# baldwinhugo
+	sed -i '/hugo/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/aUpiOmIk188WgJrMQYMM9H16pDzVwLqQqF80nWKYbTVwof/d' /root/.ssh/authorized_keys
+	# bournemartin
+	sed -i '/martin/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/GnEn5XZIIox4pituitqAYSvomPGf2dNSh3lgqckemItbzC/d' /root/.ssh/authorized_keys
+	# chenlola
+	sed -i '/lola/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/QYnGI7wz9L86cSHvV2ySN96ZLOPHG605kGYXObpXRNj0ev/d' /root/.ssh/authorized_keys
+	# diazreagan
+	sed -i '/reagan/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/qhhWpczL14ytNu5rHAuJCC6emFm9sYXZFF66MGGGnjGGAC/d' /root/.ssh/authorized_keys
+	# dustinandy
+	sed -i '/andy/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/qF6CDt413a7lCaKPomh6zJXq1wnKMkSzpHShekyFDBU6z9/d' /root/.ssh/authorized_keys
+	# fifieldwill
+	sed -i '/will/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/c4ncUamjo2AbjL04LzNCicvbvarDYlV8u3ZkY1eDcjDRzC/d' /root/.ssh/authorized_keys
+	# grantalex
+	sed -i '/alex/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/Bxjeg4E+dU4RrGAvb7Qgxdrn+QCMARSd+fRbWeU4Xms/d' /root/.ssh/authorized_keys
+	# gaydukovalexey
+	sed -i '/alexey/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/NzaC1yc2EAAAABJQAAAIEAuSfmLaFljmUA1prtBNWEi6hs/d' /root/.ssh/authorized_keys
+	# guptapulkit
+	sed -i '/pulkit/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/B3NzaC1yc2EAAAABJQAAAIBsElXHMA93t9ND4OJMZoT66L/d' /root/.ssh/authorized_keys
+	# hanashylo
+	sed -i '/shylo/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/RXzo56cvuVwfUIad8Ym6zUQOErEtsjWUPGL45FJpJzbz8p/d' /root/.ssh/authorized_keys
+	# jaxsonshane
+	sed -i '/shane/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/BiIp2A66pySywFvGPQBcdmgxwBsGDNYB2QxtV2BiAb59SI/d' /root/.ssh/authorized_keys
+	# hawthornekarl
+	sed -i '/karl/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/jS81qbsZ7LxaEmdAXpKAR2k6nZR1aqdHo797JdOF87e6il/d' /root/.ssh/authorized_keys
+	# kingtarei
+	sed -i '/tarei/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/wzQG2IiYAiPZqStko5yKYQuSbvLqjAnEC2DuexV3R9AEgP/d' /root/.ssh/authorized_keys
+	# kumarsumeet
+	sed -i '/sumeet/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/C1yc2EAAAABJQAAAIEA6leB9rFZS1NEl73mhxmJDJhlznJ/d' /root/.ssh/authorized_keys
+	# mcdonaldbradley
+	sed -i '/brad/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/gWoQfNJUMDn3bZiUUVMfp89W2YZyXVb2MZZQ8O3uekETm4/d' /root/.ssh/authorized_keys
+	# moorehelen
+	sed -i '/helen/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/uVw59tjJx1B8FkA53ALt4YZTJEHUYaSiWVMJNNTYRd3YN2/d' /root/.ssh/authorized_keys
+	# mooretyson
+	sed -i '/tyson/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/nFuiFR5OVjB93XJB1Tx27FHgEaxR5nsgtP45xVud5Gup4E/d' /root/.ssh/authorized_keys
+	sed -i '/EGhpsmDW1xaKSr8LaRuAfVPv7auCSXPzRN8Ie0eC8YpofH/d' /root/.ssh/authorized_keys
+	# parkjune
+	sed -i '/june/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/RG0el7ddyJQUzTPhIX3R3VCsZSLyurnDCFWqFYDdEO7pwK/d' /root/.ssh/authorized_keys
+	# ranahemal
+	sed -i '/hemal/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/KoYwUqhElZOPODDTTZWMhxlyru3ZjywfrxolxK953ms6DZ/d' /root/.ssh/authorized_keys
+	# spurrphilip
+	sed -i '/philip/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/hrRc01adr5RLERIsh4628v9G4fZskHOWdTYDMeyKqRLhGR/d' /root/.ssh/authorized_keys
+	# steventonryan
+	sed -i '/ryan/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/xSE4TXvRSsWf1XpXPJevyqNJ7jNAEOl9Cfjc9WifhITxQX/d' /root/.ssh/authorized_keys
+	sed -i '/4RHHEzdCKRZ9gBRRBo4E54ZtQRzOSHfiCQ0EhMimJpADy0/d' /root/.ssh/authorized_keys
+	# watsonjames
+	sed -i '/watson/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/yOhXs4dgIkP6sBK6fDyi83iBPflJ5cFVsCBiW3Pe35q0EV/d' /root/.ssh/authorized_keys
+	# wongtony
+	sed -i '/tony/I{/^ssh-[dr]sa/!d;}' /root/.ssh/authorized_keys
+	sed -i '/uMYRsD7uwDikkJJ7yZY8quP9fHSdQNvPIXt2sfEFL8euyh/d' /root/.ssh/authorized_keys
+
+	# Remove whitespaces / webdrive
+	sed -i '/WebDive/Id' /root/.ssh/authorized_keys
+	sed -i '/WebDrive/Id' /root/.ssh/authorized_keys
+	sed -i '/Web Drive/Id' /root/.ssh/authorized_keys
+	sed -i '/^$/d' /root/.ssh/authorized_keys
+fi

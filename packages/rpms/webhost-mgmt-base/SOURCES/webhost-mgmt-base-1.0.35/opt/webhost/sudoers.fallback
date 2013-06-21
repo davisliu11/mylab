@@ -1,0 +1,16 @@
+# /etc/sudoers
+#
+# Fallback sudoers file
+
+Defaults	env_reset
+
+# User privilege specification
+root	ALL=(ALL) ALL
+
+# Allow members of group sudo to execute any command
+# (Note that later entries override this, so you might need to move
+# it further down)
+%sudo ALL=(ALL) ALL
+
+Defaults:webdrive  log_year, logfile=/var/log/sudo.log
+webdrive ALL=(ALL) NOPASSWD: ALL

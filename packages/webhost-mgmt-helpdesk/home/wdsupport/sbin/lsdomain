@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ "$1" = "" ]; then
+	namefilter=""
+else
+	namefilter="-name \""$1"\""
+fi
+
+findExec="find /var/www/vhosts -maxdepth 1 -mindepth 1 -type d $namefilter"
+
+echo $findExec
+
+find /var/www/vhosts -maxdepth 1 -mindepth 1 -type d ! -name chroot ! -name default ! -name .skel $namefilter | sed 's|/var/www/vhosts/||' | sort

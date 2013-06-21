@@ -1,0 +1,39 @@
+--- httpd-itk.spec.orig	2013-05-05 13:46:23.760061864 +1200
++++ httpd-itk.spec	2013-05-05 14:01:06.692068607 +1200
+@@ -5,7 +5,7 @@
+ Summary:		MPM Itk for Apache HTTP Server
+ Name:		httpd-itk
+ Version:		2.2.22
+-Release:		6%{?dist}
++Release:		6%{?dist}_webhost
+ URL:			http://mpm-itk.sesse.net/
+ License:		ASL 2.0
+ Group:		System Environment/Daemons
+@@ -18,6 +18,8 @@
+ # It main Patch, actually as second upstream source for this package in patch form distribution!
+ Patch100:		http://mpm-itk.sesse.net/apache2.2-mpm-itk-2.2.17-01.patch
+ 
++Patch101:		apache2.2-mpm-itk-seculrelve.patch
++
+ Source1:		README.Fedora
+ 
+ # Other patches (greather than 200) from main httpd package. Unfortunately I can't gone it there
+@@ -63,6 +65,8 @@
+ %patch99 -p1 -b .pre-itk
+ %patch100 -p1 -b .itk
+ 
++%patch101 -p1 -b .itk-lve
++
+ %patch201 -p1 -b .apctl
+ %patch202 -p1 -b .apxs
+ %patch203 -p1 -b .deplibs
+@@ -134,6 +138,9 @@
+ %{_sbindir}/httpd.itk
+ 
+ %changelog
++* Sun May 05 2013 Steve Hogg <steve@webdrive.co.nz> - 2.2.22-6_webhost
++- Patch ITK for LVE support
++
+ * Mon Mar 26 2012 Pavel Alexeev <Pahan@Hubbitus.info> - 2.2.22-6
+ - Fix httpd requirement version for el6 bz#806660
+ 

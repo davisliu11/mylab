@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# remove crontab entry
+(crontab -l | grep -v "apt-check") | crontab -
+
+# remove sudo entries
+sed -i '/WEBHOST-MGMT-BASE/,/\/WEBHOST-MGMT-BASE/d' /etc/sudoers
+
+# Remove lock on sudoers.fallback
+chattr -i /opt/webhost/sudoers.fallback
+
+if [ "$1" = "remove" ]; then
+	echo -e "Package has been removed." | mail -s "WEBHOST-MGMT-BASE: Package removed from `cat /opt/webhost/asset`" serverwatch@webdrive.co.nz
+fi

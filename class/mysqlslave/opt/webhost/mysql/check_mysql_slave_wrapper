@@ -1,0 +1,58 @@
+#!/usr/bin/php
+<?php
+$mysqlINI = parse_ini_file ( "/root/.my.cnf" );
+
+// Process switches
+while (true) {
+        switch($argv[0]) {
+                case "-w":
+                case "--warning":
+                        array_shift($argv);
+                        $warningSec = preg_replace("/[^0-9]/","",$argv[0]);
+                        break;
+                case "-c":
+                case "--critical":
+                        array_shift($argv);
+                        $criticalSec = preg_replace("/[^0-9]/","",$argv[0]);
+                        break;
+        }
+        array_shift($argv);
+        if (count($argv)==0) break;
+}
+
+if (!isset($warningSec)) $warningSec = 600;
+if (!isset($criticalSec)) $criticalSec = 4000;
+
+if (!isset($mysqlINI["user"])) {
+	echo "No user set in .my.cnf";
+	exit(2);
+}
+
+if (!isset($mysqlINI["password"])) {
+	echo "No password set in .my.cnf";
+	exit(2);
+}
+
+$cmd = "/usr/lib/nagios/plugins/check_mysql -S -u ".$mysqlINI["user"]." -p ".$mysqlINI["password"]." -w ".escapeshellarg($warningSec)." -c ".escapeshellarg($criticalSec);
+
+$descriptorspec = array(
+   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+   2 => array("pipe", "r")
+);
+
+$process = proc_open($cmd,$descriptorspec,$pipes);
+
+fclose($pipes[0]);
+
+$result = stream_get_contents($pipes[1]);
+echo $result;
+fclose($pipes[1]);
+
+$return_value = proc_close($process);
+
+if ($return_value != 0 && trim($result) == "No slaves defined")
+        $return_value = 0;
+
+exit($return_value);
+?>

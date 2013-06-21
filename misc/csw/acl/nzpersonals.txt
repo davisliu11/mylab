@@ -1,0 +1,98 @@
+interface Vlan331
+ ip access-group CUSTFW-VL331-UP in
+ ip access-group CUSTFW-VL331-DOWN out
+end
+
+no ip access-list extended CUSTFW-VL331-DOWN
+no ip access-list extended CUSTFW-VL331-UP
+
+ip access-list extended CUSTFW-VL331-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses
+ permit ip 172.16.253.0 0.0.0.255 any
+ permit ip host 112.109.64.13 any
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp host 119.47.119.27 eq 80 any established
+ permit tcp host 119.47.119.40 eq 1688 any established
+ permit tcp any eq 25 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 110 any established
+ permit udp any eq 123 any
+ permit tcp any eq 143 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 465 any established
+ permit tcp any eq 587 any established
+ permit tcp any eq 993 any established
+ permit tcp any eq 995 any established
+ permit tcp any eq 3007 any established
+
+ !inbound ports
+ permit tcp any any eq 25
+ permit tcp any any eq 80
+ permit tcp any any eq 81
+ permit tcp any any eq 88
+ permit tcp any any eq 110
+ permit tcp any any eq 443
+ permit tcp any any eq 843
+ permit tcp any any eq 1024
+
+ deny   ip any any
+exit
+
+ip access-list extended CUSTFW-VL331-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses
+ permit ip any 172.16.253.0 0.0.0.255
+ permit ip any host 112.109.64.13
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any host 119.47.119.27 eq 80
+ permit tcp any host 119.47.119.40 eq 1688
+ permit tcp any any eq 25
+ permit tcp any any eq 80
+ permit tcp any any eq 110
+ permit udp any any eq 123
+ permit tcp any any eq 143
+ permit tcp any any eq 443
+ permit tcp any any eq 465
+ permit tcp any any eq 587
+ permit tcp any any eq 993
+ permit tcp any any eq 995
+ permit tcp any any eq 3007
+ 
+ !inbound ports
+ permit tcp any eq 25 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 81 any established
+ permit tcp any eq 88 any established
+ permit tcp any eq 110 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 843 any established
+ permit tcp any eq 1024 any established
+
+ deny ip any any
+exit
+end

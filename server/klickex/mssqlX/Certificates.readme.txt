@@ -1,0 +1,5 @@
+Used for authentication of the sql accounts used for DB mirroring between mssql1 & mssql2.
+
+Certificate expiry on 26/06/2012
+
+To renew, follow http://jeremycarterblog.com/2010/09/how-to-replace-expired-certificates-used-in-database-mirroring/ 

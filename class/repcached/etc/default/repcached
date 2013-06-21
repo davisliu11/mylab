@@ -1,0 +1,2 @@
+# Set this to no to disable repcached.
+ENABLE_REPCACHED=yes

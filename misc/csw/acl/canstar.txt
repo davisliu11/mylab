@@ -1,0 +1,148 @@
+no ip access-list extended CUSTFW-VL385-DOWN
+
+ip access-list extended CUSTFW-VL385-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+! dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+! customer auth-dns (REF: RQV-520873)
+ permit udp any any eq domain
+ permit tcp any any eq domain
+
+! mail (originating from customer)
+ permit tcp any eq 25 any established
+
+! ftp (originating from internet)
+ permit tcp any any eq 21
+ permit tcp any any range 9500 9550
+
+! fileguardian
+ permit tcp any eq 8443 any established
+
+! web (outbound-return)
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+! web (inboud-connect)
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+! ntp
+ permit udp any any eq 123
+
+! customer ssh
+ permit tcp 125.7.43.200 0.0.0.7 any eq 22
+ permit tcp 210.193.215.64 0.0.0.31 any eq 22
+
+! customer squid
+ permit tcp 125.7.43.200 0.0.0.7 any eq 3128
+ permit tcp 210.193.215.64 0.0.0.31 any eq 3128
+
+! customer nagios
+ permit tcp 125.7.43.200 0.0.0.7 any eq 5666
+ permit tcp 210.193.215.64 0.0.0.31 any eq 5666
+
+! customer webmin
+ permit tcp 125.7.43.200 0.0.0.7 any eq 10000
+ permit tcp 210.193.215.64 0.0.0.31 any eq 10000
+
+! customer snmp 
+ permit udp 125.7.43.200 0.0.0.7 any eq 161
+ permit udp 210.193.215.64 0.0.0.31 any eq 161
+ permit udp 125.7.43.200 0.0.0.7 any eq 162
+ permit udp 210.193.215.64 0.0.0.31 any eq 162
+
+! customer oracle (REF:NPL-583703)
+ permit tcp 210.247.230.104 0.0.0.7 eq 1521 any established
+ 
+! web drive vpn
+ permit tcp host 119.47.119.238 any eq 22
+ permit tcp host 119.47.119.239 any eq 22
+ deny tcp any any eq 22
+ permit ip 172.16.253.0 0.0.0.255 any
+
+exit
+
+
+
+
+no ip access-list extended CUSTFW-VL385-UP
+
+ip access-list extended CUSTFW-VL385-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+! dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+! customer auth-dns (REF: RQV-520873)
+ permit udp any eq domain any
+ permit tcp any eq domain any
+
+! mail (originating from customer)
+ permit tcp any any eq 25
+
+! ftp (originating from internet)
+ permit tcp any eq 21 any established
+ permit tcp any range 9500 9550 any established
+
+! fileguardian
+ permit tcp any any eq 8443
+
+! web (outbound-connect)
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+! web (inboud-return)
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+! ntp
+ permit udp any any eq 123
+
+! customer ssh (inbound-return)
+ permit tcp any eq 22 125.7.43.200 0.0.0.7 established
+ permit tcp any eq 22 210.193.215.64 0.0.0.31 established
+
+! customer squid
+ permit tcp any eq 3128 125.7.43.200 0.0.0.7 established
+ permit tcp any eq 3128 210.193.215.64 0.0.0.31 established
+
+! customer nagios
+ permit tcp any eq 5666 125.7.43.200 0.0.0.7 established
+ permit tcp any eq 5666 210.193.215.64 0.0.0.31 established
+
+! customer webmin
+ permit tcp any eq 10000 125.7.43.200 0.0.0.7 established
+ permit tcp any eq 10000 210.193.215.64 0.0.0.31 established
+
+! customer snmp
+ permit udp any eq 161 125.7.43.200 0.0.0.7
+ permit udp any eq 161 210.193.215.64 0.0.0.31
+ permit udp any eq 162 125.7.43.200 0.0.0.7
+ permit udp any eq 162 210.193.215.64 0.0.0.31
+
+! customer oracle (REF:NPL-583703)
+  permit tcp any 210.247.230.104 0.0.0.7 eq 1521
+
+! web drive vpn
+ permit tcp any eq 22 host 119.47.119.238 established
+ permit tcp any eq 22 host 119.47.119.239 established
+ deny tcp any eq 22 any established 
+ permit ip any 172.16.253.0 0.0.0.255
+
+exit

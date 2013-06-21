@@ -1,0 +1,191 @@
+interface Vlan264
+
+ ip access-group CUSTFW-VL264-UP in
+ ip access-group CUSTFW-VL264-DOWN out
+
+exit
+
+
+no ip access-list extended CUSTFW-VL264-DOWN
+no ip access-list extended CUSTFW-VL264-UP
+
+ip access-list extended CUSTFW-VL264-DOWN
+
+ ! WEBHOST-DEFAULT
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ ! WEBHOST-VPN
+ permit ip 172.16.253.0 0.0.0.255 any
+ 
+ ! WEBHOST-MANAGEMENT
+ permit tcp host 119.47.119.238 any eq 22
+ permit tcp host 119.47.119.239 any eq 22
+
+ ! WEBHOST-SERVICES
+ permit udp host 119.47.119.240 eq domain any
+ permit udp host 119.47.119.241 eq domain any
+ permit tcp host 119.47.119.240 eq domain any established
+ permit tcp host 119.47.119.241 eq domain any established
+ permit udp host 119.47.119.242 eq 123 any
+ permit udp host 119.47.119.243 eq 123 any
+ permit udp host 119.47.119.244 eq 123 any
+
+ ! WEBHOST-MONITORING
+ permit tcp host 202.89.43.31 any eq 5666
+ permit tcp host 119.47.119.31 any eq 5666
+ permit tcp host 202.89.43.31 any eq 22
+ permit tcp host 119.47.119.31 any eq 22
+ permit tcp host 202.89.43.31 any eq 80
+ permit tcp host 119.47.119.31 any eq 80
+ permit udp host 119.47.119.44 any eq 161
+ permit udp host 119.47.119.44 eq 25826 any
+
+! CUSTOMER-INBOUND : cr-lsrv1
+ permit tcp host 125.236.69.151 host 112.109.73.33 eq 22
+ permit tcp host 125.236.42.80 host 112.109.73.33 eq 22
+ permit tcp host 202.175.143.77 host 112.109.73.33 eq 22
+ permit tcp host 112.109.64.41 host 112.109.73.33 eq 22
+ permit tcp host 112.109.64.42 host 112.109.73.33 eq 22
+ permit tcp host 112.109.64.43 host 112.109.73.33 eq 22
+ permit tcp host 212.139.109.1 host 112.109.73.33 eq 22
+ ! CUSTOMER-INBOUND : cr-lsrv
+ permit tcp host 125.236.69.151 host 112.109.73.56 eq 22
+ permit tcp host 125.236.42.80 host 112.109.73.56 eq 22
+ permit tcp host 202.175.143.77 host 112.109.73.56 eq 22
+ permit tcp host 112.109.64.41 host 112.109.73.56 eq 22
+ permit tcp host 112.109.64.42 host 112.109.73.56 eq 22
+ permit tcp host 112.109.64.43 host 112.109.73.56 eq 22
+ permit tcp host 212.139.109.1 host 112.109.73.56 eq 22
+
+ ! CUSTOMER-INBOUND : cr-lws-a01
+ permit tcp any host 112.109.73.38 eq 80
+ permit tcp any host 112.109.73.38 eq 443
+ ! CUSTOMER-INBOUND : cr-lws-a02 
+ permit tcp any host 112.109.73.39 eq 80
+ permit tcp any host 112.109.73.39 eq 443
+ ! CUSTOMER-INBOUND : cr-lws-a03
+ permit tcp any host 112.109.73.40 eq 80
+ permit tcp any host 112.109.73.40 eq 443
+ ! CUSTOMER-INBOUND : cr-lws-a04 
+ permit tcp any host 112.109.73.41 eq 80
+ permit tcp any host 112.109.73.41 eq 443
+ ! CUSTOMER-INBOUND : cr-lws
+ permit tcp any host 112.109.73.50 eq 80
+ permit tcp any host 112.109.73.50 eq 443
+ permit tcp any host 112.109.73.52 eq 80
+ permit tcp any host 112.109.73.52 eq 443
+ 
+ ! CUSTOMER-OUTBOUND : default
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+ ! CUSTOMER-OUTBOUND : cr-lsrv
+ permit tcp any eq 22 host 112.109.73.33 established
+ permit tcp any eq 8443 host 112.109.73.33 established
+ permit tcp any eq 25 host 112.109.73.54 established
+
+ ! CUSTOMER-LEGACY : solr / vs1
+ permit ip any host 119.47.121.9
+ permit ip any host 119.47.121.10
+ 
+ ! DEFAULT
+ deny ip any any
+
+exit
+
+
+
+
+ip access-list extended CUSTFW-VL264-UP
+
+ ! WEBHOST-DEFAULT
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ ! WEBHOST-VPN
+ permit ip any 172.16.253.0 0.0.0.255
+
+ ! WEBHOST-MANAGEMENT
+ permit tcp any eq 22 host 119.47.119.238 established
+ permit tcp any eq 22 host 119.47.119.239 established
+
+ ! WEBHOST-SERVICES
+ permit udp any host 119.47.119.240 eq domain
+ permit udp any host 119.47.119.241 eq domain
+ permit tcp any host 119.47.119.240 eq domain
+ permit tcp any host 119.47.119.241 eq domain
+ permit udp any host 119.47.119.242 eq 123
+ permit udp any host 119.47.119.243 eq 123
+ permit udp any host 119.47.119.244 eq 123
+
+ ! WEBHOST-MONITORING
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 5666 host 119.47.119.31 established
+ permit tcp any eq 22 host 202.89.43.31 established
+ permit tcp any eq 22 host 119.47.119.31 established
+ permit tcp any eq 80 host 202.89.43.31 established
+ permit tcp any eq 80 host 119.47.119.31 established
+ permit udp any eq 161 host 119.47.119.44
+ permit udp any host 119.47.119.44 eq 25826
+ 
+ ! CUSTOMER-INBOUND : cr-lsrv1
+ permit tcp host 112.109.73.33 eq 22 host 125.236.69.151 established
+ permit tcp host 112.109.73.33 eq 22 host 125.236.42.80 established
+ permit tcp host 112.109.73.33 eq 22 host 202.175.143.77 established
+ permit tcp host 112.109.73.33 eq 22 host 112.109.64.41 established
+ permit tcp host 112.109.73.33 eq 22 host 112.109.64.42 established
+ permit tcp host 112.109.73.33 eq 22 host 112.109.64.43 established
+ permit tcp host 112.109.73.33 eq 22 host 212.139.109.1 established
+ ! CUSTOMER-INBOUND : cr-lsrv
+ permit tcp host 112.109.73.56 eq 22 host 125.236.69.151 established
+ permit tcp host 112.109.73.56 eq 22 host 125.236.42.80 established
+ permit tcp host 112.109.73.56 eq 22 host 202.175.143.77 established
+ permit tcp host 112.109.73.56 eq 22 host 112.109.64.41 established
+ permit tcp host 112.109.73.56 eq 22 host 112.109.64.42 established
+ permit tcp host 112.109.73.56 eq 22 host 112.109.64.43 established
+ permit tcp host 112.109.73.56 eq 22 host 212.139.109.1 established
+ 
+ ! CUSTOMER-INBOUND : cr-lws-a01
+ permit tcp host 112.109.73.38 eq 80 any established
+ permit tcp host 112.109.73.38 eq 443 any established
+ ! CUSTOMER-INBOUND : cr-lws-a02 
+ permit tcp host 112.109.73.39 eq 80 any established
+ permit tcp host 112.109.73.39 eq 443 any established
+ ! CUSTOMER-INBOUND : cr-lws-a03
+ permit tcp host 112.109.73.40 eq 80 any established
+ permit tcp host 112.109.73.40 eq 443 any established
+ ! CUSTOMER-INBOUND : cr-lws-a04 
+ permit tcp host 112.109.73.41 eq 80 any established
+ permit tcp host 112.109.73.41 eq 443 any established
+ ! CUSTOMER-INBOUND : cr-lws
+ permit tcp host 112.109.73.50 eq 80 any established
+ permit tcp host 112.109.73.50 eq 443 any established
+ permit tcp host 112.109.73.52 eq 80 any established
+ permit tcp host 112.109.73.52 eq 443 any established
+ 
+ ! CUSTOMER-OUTBOUND : default
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+ ! CUSTOMER-OUTBOUND : cr-lsrv
+ permit tcp host 112.109.73.33 any eq 22
+ permit tcp host 112.109.73.33 any eq 8443
+ permit tcp host 112.109.73.54 any eq 25
+
+ ! CUSTOMER-LEGACY : solr / vs1
+ permit ip host 119.47.121.9 any
+ permit ip host 119.47.121.10 any
+ 
+ ! DEFAULT
+ deny ip any any
+
+exit
+
+end

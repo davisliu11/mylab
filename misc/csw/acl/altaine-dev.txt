@@ -1,0 +1,133 @@
+interface Vlan345
+...
+ ip access-group CUSTFW-VL345-UP in
+ ip access-group CUSTFW-VL345-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL345-DOWN
+no ip access-list extended CUSTFW-VL345-UP
+
+! This ruleset is to match 'altaine' with a few extra 
+! rules which shall be put under extra.
+  
+ip access-list extended CUSTFW-VL345-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses - webdrive, altaine
+ permit ip 172.16.253.0 0.0.0.255 any
+ permit ip host 112.109.64.17 any
+ permit ip host 112.109.64.18 any
+ permit ip host 112.109.64.19 any
+ permit ip host 112.109.64.20 any
+ permit ip host 112.109.64.22 any
+ permit ip host 112.109.64.23 any
+ permit ip host 112.109.64.26 any
+ permit ip host 112.109.64.55 any
+
+ !ref - TAM-967784
+ permit ip 219.88.246.0 0.0.0.255 any
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp host 119.47.119.40 eq 1688 any established
+ permit tcp any eq 25 any established
+ permit tcp any eq 110 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 8180 any established
+ permit tcp any eq 8443 any established
+
+ !inbound http/https
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ 
+ 
+ !extra ports required on dev
+ ! second webservice
+ permit tcp any any eq 8080
+ ! drive sharing
+ permit tcp any any eq 139
+ permit tcp any any eq 445
+ ! ftp
+ permit tcp any any eq 21
+ permit tcp any any range 9500 9510
+
+ ! REF: UGK-502165
+ permit tcp any eq 9443 any established
+ permit tcp host 83.166.163.203 any
+
+ ! REF: XBL-910021
+ permit tcp host 89.238.173.131 any established
+
+ deny ip any any
+exit
+
+
+ip access-list extended CUSTFW-VL345-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses - webdrive, altaine
+ permit ip any 172.16.253.0 0.0.0.255
+ permit ip any host 112.109.64.17
+ permit ip any host 112.109.64.18
+ permit ip any host 112.109.64.19
+ permit ip any host 112.109.64.20
+ permit ip any host 112.109.64.22
+ permit ip any host 112.109.64.23
+ permit ip any host 112.109.64.26
+ permit ip any host 112.109.64.55
+
+ !ref - TAM-967784
+ permit ip any 219.88.246.0 0.0.0.255
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any host 119.47.119.40 eq 1688
+ permit tcp any any eq 25
+ permit tcp any any eq 110
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit tcp any any eq 8180 
+ permit tcp any any eq 8443 
+
+ !inbound http
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+ !extra ports required on dev
+ ! second webservice
+ permit tcp any eq 8080 any established
+ ! drive sharing
+ permit tcp any eq 139 any established
+ permit tcp any eq 445 any established
+ ! ftp
+ permit tcp any eq 21 any established
+ permit tcp any range 9500 9510 any established
+
+ ! REF: UGK-502165
+ permit tcp any any eq 9443
+ permit tcp any host 83.166.163.203
+ ! REF: XBL-910021
+ permit tcp any host 89.238.173.131
+
+ deny ip any any
+exit

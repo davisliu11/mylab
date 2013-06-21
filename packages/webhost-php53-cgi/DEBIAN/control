@@ -1,0 +1,12 @@
+Package: webhost-php53-cgi
+Name: webhost-php53-cgi
+Version: 1.0.7
+Section: base
+Priority: optional
+Architecture: all
+Maintainer: Web Drive SysAdmin Team <sysadmin@webdrive.co.nz>
+Author: Steve Hogg <steve@webdrive.co.nz>
+Sponsor: Web Drive Ltd <http://www.webdrive.co.nz/>
+Homepage: http://www.webdrive.co.nz/
+Depends: bash
+Description: PHP 5.3 CGI

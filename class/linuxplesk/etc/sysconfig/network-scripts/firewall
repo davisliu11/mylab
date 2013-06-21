@@ -1,0 +1,130 @@
+#/bin/bash
+I="iptables -A INPUT"
+O="iptables -A OUTPUT"
+F="iptables -A FORWARD"
+MODULES="ip_conntrack_ftp"
+SYSCTL="/sbin/sysctl"
+
+# Load additional necessary modules
+for module in $MODULES;
+do
+        /sbin/modprobe $module
+done
+
+SERVER_IP="#######"
+
+# Stop certain attacks
+echo "Setting sysctl IPv4 settings..."
+$SYSCTL net.ipv4.ip_forward=0
+$SYSCTL net.ipv4.conf.all.send_redirects=0
+$SYSCTL net.ipv4.conf.default.send_redirects=0
+$SYSCTL net.ipv4.conf.all.accept_source_route=0
+$SYSCTL net.ipv4.conf.all.accept_redirects=0
+$SYSCTL net.ipv4.conf.all.secure_redirects=0
+$SYSCTL net.ipv4.conf.all.log_martians=1
+$SYSCTL net.ipv4.conf.default.accept_source_route=0
+$SYSCTL net.ipv4.conf.default.accept_redirects=0
+$SYSCTL net.ipv4.conf.default.secure_redirects=0
+$SYSCTL net.ipv4.icmp_echo_ignore_broadcasts=1
+#$SYSCTL net.ipv4.icmp_ignore_bogus_error_messages=1
+$SYSCTL net.ipv4.tcp_syncookies=1
+$SYSCTL net.ipv4.conf.all.rp_filter=1
+$SYSCTL net.ipv4.conf.default.rp_filter=1
+$SYSCTL kernel.exec-shield=1
+$SYSCTL kernel.randomize_va_space=1
+########################################################################
+# Flush all existing rules, allow loopback traffic, useful ICMP,
+# existing connections and management services not hosted here.
+########################################################################
+
+iptables -F
+iptables -X
+ip6tables -F
+ip6tables -X
+ip6tables -A INPUT -j REJECT
+ip6tables -A OUTPUT -j REJECT
+ip6tables -A FORWARD -j REJECT
+
+$I -i lo -j ACCEPT
+$O -o lo -j ACCEPT
+$I -p icmp --fragment -j DROP
+$I -p icmp --icmp-type echo-request -j ACCEPT
+$I -p icmp --icmp-type echo-reply -j ACCEPT
+$I -p icmp --icmp-type destination-unreachable -j ACCEPT
+$I -p icmp --icmp-type time-exceeded -j ACCEPT
+$I -p icmp -j DROP
+$O -p icmp --icmp-type echo-request -j ACCEPT
+$O -p icmp --icmp-type echo-reply -j ACCEPT
+$O -p icmp --icmp-type destination-unreachable -j ACCEPT
+$O -p icmp --icmp-type time-exceeded -j ACCEPT
+$O -p icmp -j DROP
+$I -m state --state ESTABLISHED -j ACCEPT
+$O -m state --state RELATED,ESTABLISHED -j ACCEPT
+$I -d $SERVER_IP -s 119.47.119.238 -p tcp --dport 22 -j ACCEPT  # ssh, cli1.webhost.co.nz
+$I -d $SERVER_IP -s 119.47.119.239 -p tcp --dport 22 -j ACCEPT  # ssh, cli2.webhost.co.nz
+$I -d $SERVER_IP -s 119.47.119.31 -p tcp --dport 22 -j ACCEPT    # ssh, wd2.mydns.net.nz
+$I -d $SERVER_IP -s 119.47.119.31 -p tcp --dport 5666 -j ACCEPT  # nagios, wd2.mydns.net.nz
+$I -d $SERVER_IP -s 202.89.43.31 -p tcp --dport 22 -j ACCEPT    # ssh, wd2.mydns.net.nz
+$I -d $SERVER_IP -s 202.89.43.31 -p tcp --dport 5666 -j ACCEPT  # nagios, wd2.mydns.net.nz
+$O -s $SERVER_IP -d 119.47.119.240 -p udp --dport 53 -j ACCEPT  # dns-udp, ns1.webhost.co.nz
+$O -s $SERVER_IP -d 119.47.119.240 -p tcp --dport 53 -j ACCEPT  # dns-tcp, ns1.webhost.co.nz
+$O -s $SERVER_IP -d 119.47.119.241 -p udp --dport 53 -j ACCEPT  # dns-udp, ns2.webhost.co.nz
+$O -s $SERVER_IP -d 119.47.119.241 -p tcp --dport 53 -j ACCEPT  # dns-tcp, ns2.webhost.co.nz
+$O -s $SERVER_IP -d 119.47.119.242 -p udp --dport 123 -j ACCEPT # ntp, ntp1.webhost.co.nz
+$O -s $SERVER_IP -d 119.47.119.243 -p udp --dport 123 -j ACCEPT # ntp, ntp2.webhost.co.nz
+$O -s $SERVER_IP -d 119.47.119.244 -p udp --dport 123 -j ACCEPT # ntp, ntp3.webhost.co.nz
+
+########################################################################
+# public-facing services
+########################################################################
+
+$I -p tcp --dport 80 -j ACCEPT  # http, all addresses
+$I -p tcp --dport 85 -j ACCEPT  # http-sql-script, all addresses
+$I -p tcp --dport 443 -j ACCEPT  # https, all addresses
+$I -p tcp --dport 8443 -j ACCEPT  # plesk
+
+$I -p tcp --dport 25 -j ACCEPT  # smtp
+$I -p tcp --dport 465 -j ACCEPT  # smtps
+$I -p tcp --dport 587 -j ACCEPT  # submission
+$I -p tcp --dport 110 -j ACCEPT  # pop
+$I -p tcp --dport 995 -j ACCEPT  # pops
+$I -p tcp --dport 143 -j ACCEPT  # imap
+$I -p tcp --dport 993 -j ACCEPT  # imaps
+# Prevent ftp syn dos (stupid anti-flood from inetd)
+$I -p tcp -m tcp --dport 21 --tcp-flags SYN,RST,ACK SYN -m recent --set --name ftp-conn-rate --rsource
+$I -p tcp -m tcp --dport 21 --tcp-flags SYN,RST,ACK SYN -m recent --rcheck --seconds 10 --hitcount 15 --name ftp-conn-rate --rsource -j LOG --log-prefix "FTP RATE EXCEEDED: "
+$I -p tcp -m tcp --dport 21 --tcp-flags SYN,RST,ACK SYN -m recent --rcheck --seconds 10 --hitcount 15 --name ftp-conn-rate --rsource -j REJECT --reject-with icmp-port-unreachable
+
+$I -p tcp --dport 21 -j ACCEPT  # ftp
+$O -p tcp --sport 20 -j ACCEPT  # ftp-data
+$I -p tcp --dport 9500:9550 -j ACCEPT  # ftp passive ports
+
+########################################################################
+# Additional necessary communication from this server
+########################################################################
+
+$I -d $SERVER_IP -s 172.16.253.0/24 -p tcp --dport 55555 -j ACCEPT # ASSP Management
+$I -d $SERVER_IP -s 172.16.252.0/24 -p tcp --dport 55555 -j ACCEPT # ASSP Management
+
+$O -p tcp --dport 21 -j ACCEPT   # ftp
+$O -p tcp --dport 25 -j ACCEPT   # smtp
+$O -p tcp --dport 80 -j ACCEPT   # http
+$O -p tcp --dport 85 -j ACCEPT   # http-sql-script (for curl init on sql script)
+$O -p tcp --dport 443 -j ACCEPT  # https
+$O -p tcp --dport 587 -j ACCEPT  # submission
+$O -p tcp --dport 3306 -j ACCEPT # mysql
+
+$O -p tcp --dport 995 -j ACCEPT  # pop3s outgoing
+$O -p tcp --dport 993 -j ACCEPT  # imaps outgoing
+$O -p tcp --dport 465 -j ACCEPT  # smtps outgoing
+
+$O -s $SERVER_IP -d ka.swsoft.com -p tcp --dport 5224 -j ACCEPT  # plesk, license update
+
+########################################################################
+# Our policy - deny everything not explicitly allowed
+########################################################################
+
+$I -j REJECT
+$O -j REJECT
+$F -j REJECT
+

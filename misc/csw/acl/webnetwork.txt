@@ -1,0 +1,108 @@
+interface Vlan210
+...
+ ip access-group CUSTFW-VL210-UP in
+ ip access-group CUSTFW-VL210-DOWN out
+...
+end
+
+
+
+no ip access-list extended CUSTFW-VL210-DOWN
+no ip access-list extended CUSTFW-VL210-UP
+
+ip access-list extended CUSTFW-VL210-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit ip 172.16.253.0 0.0.0.255 any
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+ permit udp any eq domain any
+ permit tcp any eq domain any established
+ permit udp any any eq domain
+ permit tcp any any eq domain
+ permit tcp any any eq ftp
+ permit tcp any any range 9500 9550
+ permit tcp any eq smtp any established
+ permit tcp any eq pop3 any established
+ permit tcp any eq 143 any established
+ permit tcp any eq 465 any established
+ permit tcp any eq 587 any established
+ permit tcp any eq 993 any established
+ permit tcp any eq 995 any established
+ permit tcp any any eq smtp
+ permit tcp any any eq pop3
+ permit tcp any any eq 143
+ permit tcp any any eq 465
+ permit tcp any any eq 587
+ permit tcp any any eq 993
+ permit tcp any any eq 995
+ permit tcp any any eq 22
+ permit tcp any any eq 3306
+ permit tcp any any eq 3389
+ permit tcp host 202.89.43.31 any eq 5666
+ permit tcp any eq 22 any established
+ permit tcp any eq 3306 any established
+ permit tcp any eq 3389 any established
+ permit tcp any eq whois any established
+ permit udp any eq ntp any
+ permit tcp any eq 1688 any established
+ permit tcp any eq 8443 any established
+ permit tcp any eq 5224 any established
+ permit tcp any eq www any established
+ permit tcp any eq 443 any established
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ permit tcp any any eq 8443
+ permit tcp any any eq 8880
+ deny   ip any any
+exit
+
+ip access-list extended CUSTFW-VL210-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit ip any 172.16.253.0 0.0.0.255
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+ permit udp any any eq domain
+ permit tcp any any eq domain
+ permit udp any eq domain any
+ permit tcp any eq domain any established
+ permit tcp any eq ftp any established
+ permit tcp any range 9500 9550 any established
+ permit tcp any any eq smtp
+ permit tcp any any eq pop3
+ permit tcp any any eq 143
+ permit tcp any any eq 465
+ permit tcp any any eq 587
+ permit tcp any any eq 993
+ permit tcp any any eq 995
+ permit tcp any eq smtp any established
+ permit tcp any eq pop3 any established
+ permit tcp any eq 143 any established
+ permit tcp any eq 465 any established
+ permit tcp any eq 587 any established
+ permit tcp any eq 993 any established
+ permit tcp any eq 995 any established
+ permit tcp any eq 22 any established
+ permit tcp any eq 3306 any established
+ permit tcp any eq 3389 any established
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any any eq 22
+ permit tcp any any eq 3306
+ permit tcp any any eq 3389
+ permit tcp any any eq whois
+ permit udp any any eq ntp
+ permit tcp any any eq 1688
+ permit tcp any any eq 8443
+ permit tcp any any eq 5224
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ permit tcp any eq www any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 8443 any established
+ permit tcp any eq 8880 any established
+ deny   ip any any
+exit
+end

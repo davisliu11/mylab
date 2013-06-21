@@ -1,0 +1,4 @@
+# WEBHOST-MGMT-BASE: /etc/sudoers.d/webdrive
+Defaults:webdrive  log_year, logfile=/var/log/sudo.log
+webdrive ALL=(ALL) NOPASSWD: ALL
+# /WEBHOST-MGMT-BASE: /etc/sudoers.d/webdrive

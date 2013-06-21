@@ -1,0 +1,122 @@
+interface Vlan401
+!
+ ip access-group CUSTFW-VL401-DOWN out
+ ip access-group CUSTFW-VL401-UP in
+!
+end
+!
+no ip access-list extended CUSTFW-VL401-DOWN
+no ip access-list extended CUSTFW-VL401-UP
+!
+ip access-list extended CUSTFW-VL401-DOWN
+
+ ! WEBHOST-DEFAULT
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ ! WEBHOST-DNS
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ ! WEBHOST-KMS
+ permit tcp host 119.47.119.40 eq 1688 any established
+
+ ! CUSTOMER-VPN
+ permit ip host 112.109.64.31 any
+ permit ip host 112.109.64.32 any
+ permit ip host 112.109.64.33 any
+
+ ! CUSTOMER-INBOUND
+ permit tcp any host 112.109.72.40 eq 80
+ permit tcp any host 112.109.72.40 eq 443
+ permit tcp any host 112.109.72.42 eq 80
+ permit tcp any host 112.109.72.42 eq 443
+ permit tcp any host 112.109.72.43 eq 80
+ permit tcp any host 112.109.72.43 eq 443
+
+ permit tcp any host 112.109.72.42 eq 21
+ permit tcp any host 112.109.72.42 range 9500 9510
+
+ ! CUSTOMER-OUTBOUND
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 25 any established
+
+ ! CUSTOMER-FILEGUARDIAN
+ permit tcp any eq 8443 any established
+
+ ! WEBHOST-MONITORING
+ permit tcp host 202.89.43.31 any eq 5666 
+ permit tcp host 119.47.119.31 any eq 5666
+ permit tcp host 202.89.43.31 any eq 3389  
+ permit tcp host 119.47.119.31 any eq 3389
+
+ ! WEBHOST-VPN
+ permit tcp 172.16.253.0 0.0.0.255 any eq 3389
+
+ ! IMPLICIT-DEFAULT
+ deny ip any any
+
+exit
+!
+ip access-list extended CUSTFW-VL401-UP
+
+ ! WEBHOST-DEFAULT
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+ 
+ ! WEBHOST-DNS
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ ! WEBHOST-KMS
+
+ ! CUSTOMER-VPN
+ permit ip any host 112.109.64.31
+ permit ip any host 112.109.64.32
+ permit ip any host 112.109.64.33
+
+ ! CUSTOMER-INBOUND
+ permit tcp host 112.109.72.40 eq 80 any established
+ permit tcp host 112.109.72.40 eq 443 any established
+ permit tcp host 112.109.72.42 eq 80 any established
+ permit tcp host 112.109.72.42 eq 443 any established
+ permit tcp host 112.109.72.43 eq 80 any established
+ permit tcp host 112.109.72.43 eq 443 any established
+
+ permit tcp host 112.109.72.42 eq 21 any established
+ permit tcp host 112.109.72.42 range 9500 9510 any established
+
+ ! CUSTOMER-OUTBOUND
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit tcp any any eq 25
+
+ ! CUSTOMER-FILEGUARDIAN
+ permit tcp any any eq 8443
+
+ ! WEBHOST-MONITORING
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 5666 host 119.47.119.31 established
+ permit tcp any eq 3389 host 202.89.43.31 established
+ permit tcp any eq 3389 host 119.47.119.31 established
+
+ ! WEBHOST-VPN
+ permit tcp any eq 3389 172.16.253.0 0.0.0.255 established
+ 
+ ! IMPLICIT-DEFAULT
+ deny ip any any
+
+exit
+!
+end

@@ -1,0 +1,144 @@
+interface Vlan360
+ ip access-group CUSTFW-VL360-UP in
+ ip access-group CUSTFW-VL360-DOWN out
+exit
+
+no ip access-list extended CUSTFW-VL360-DOWN
+no ip access-list extended CUSTFW-VL360-UP
+
+ip access-list extended CUSTFW-VL360-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ ! DNS
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+ 
+ ! WINDOWS-KMS
+ permit tcp host 119.47.119.40 eq 1688 any established
+
+ ! FILEGUARDIAN
+ permit tcp any eq 8443 any established
+
+ ! INBOUND - vs1.officemax.co.nz
+ permit tcp any host 112.109.69.118 eq 80
+ permit tcp any host 112.109.69.118 eq 443
+ permit tcp any host 112.109.69.119 eq 80
+ permit tcp any host 112.109.69.119 eq 443
+ permit tcp any host 112.109.69.120 eq 80
+ permit tcp any host 112.109.69.120 eq 443
+ permit tcp any host 112.109.69.121 eq 80
+ permit tcp any host 112.109.69.121 eq 443
+ permit tcp any host 112.109.69.121 eq 21
+ permit tcp any host 112.109.69.121 range 9500 9510
+ permit tcp any host 112.109.69.122 eq 80
+ permit tcp any host 112.109.69.122 eq 443
+ permit tcp any host 112.109.69.123 eq 80
+ permit tcp any host 112.109.69.123 eq 443
+
+ ! OUTBOUND
+ permit tcp any eq 25 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ 
+ ! OUTBOUND - FTP ACCESS
+ permit tcp host 203.96.83.135 any established
+ permit tcp host 203.96.83.142 any established
+ permit tcp host 210.9.90.228 any established
+ permit tcp host 122.56.3.102 any established
+
+ ! OUTBOUND - MIGRATION
+ permit tcp host 172.17.1.192 host 112.109.69.112
+
+ ! CUSTOMER ACCESS
+ permit tcp host 60.234.227.56 any eq 3389
+ permit tcp host 210.79.55.252 any eq 3389
+ permit tcp host 210.79.55.253 any eq 3389
+
+ ! MONITORING
+ permit tcp host 202.89.43.31 any eq 5666 
+ permit tcp host 119.47.119.31 any eq 5666
+ permit tcp host 202.89.43.31 any eq 3389  
+ permit tcp host 119.47.119.31 any eq 3389
+
+ ! VPN
+ permit tcp 172.16.253.0 0.0.0.255 any
+
+ ! IC-CUSTOMER-NETWORK
+ permit ip 210.79.50.0 0.0.0.255 any
+ permit ip 172.17.1.192 0.0.0.31 any
+
+ deny ip any any
+exit
+
+ip access-list extended CUSTFW-VL360-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ ! DNS
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+ 
+ ! WINDOWS-KMS
+ permit tcp any host 119.47.119.40 eq 1688
+ ! FILEGUARDIAN
+ permit tcp any any eq 8443
+
+ ! INBOUND - vs1.officemax.co.nz
+ permit tcp host 112.109.69.118 eq 80 any established
+ permit tcp host 112.109.69.118 eq 443 any established
+ permit tcp host 112.109.69.119 eq 80 any established
+ permit tcp host 112.109.69.119 eq 443 any established
+ permit tcp host 112.109.69.120 eq 80 any established
+ permit tcp host 112.109.69.120 eq 443 any established
+ permit tcp host 112.109.69.121 eq 80 any established
+ permit tcp host 112.109.69.121 eq 443 any established
+ permit tcp host 112.109.69.121 eq 21 any established
+ permit tcp host 112.109.69.121 range 9500 9510 any established
+ permit tcp host 112.109.69.122 eq 80 any established
+ permit tcp host 112.109.69.122 eq 443 any established
+ permit tcp host 112.109.69.123 eq 80 any established
+ permit tcp host 112.109.69.123 eq 443 any established
+
+ ! OUTBOUND
+ permit tcp any any eq 25
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+ ! OUTBOUND - FTP ACCESS
+ permit tcp any host 203.96.83.135
+ permit tcp any host 203.96.83.142
+ permit tcp any host 210.9.90.228
+ permit tcp any host 122.56.3.102
+
+ ! CUSTOMER ACCESS
+ permit tcp any eq 3389 host 60.234.227.56 established
+ permit tcp any eq 3389 host 210.79.55.252 established
+ permit tcp any eq 3389 host 210.79.55.253 established
+
+ ! MONITORING
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 5666 host 119.47.119.31 established
+ permit tcp any eq 3389 host 202.89.43.31 established
+ permit tcp any eq 3389 host 119.47.119.31 established
+
+ ! VPN
+ permit tcp any 172.16.253.0 0.0.0.255 established
+
+ ! IC-CUSTOMER-NETWORK
+ permit ip any 210.79.50.0 0.0.0.255
+ permit ip any 172.17.1.192 0.0.0.31
+
+ deny ip any any
+exit
+end

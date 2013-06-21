@@ -1,0 +1,198 @@
+interface VL222
+
+ ip access-group CUSTFW-VL222-UP in
+ ip access-group CUSTFW-VL222-DOWN out
+
+exit
+
+
+no ip access-list extended CUSTFW-VL222-DOWN
+no ip access-list extended CUSTFW-VL222-UP
+
+
+! INBOUND-FIREWALL
+ip access-list extended CUSTFW-VL222-DOWN
+
+ ! WEBHOST-DEFAULT
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ ! WEBHOST-VPN
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ ! WEBHOST-MANAGEMENT
+ permit tcp host 119.47.119.238 any eq 22
+ permit tcp host 119.47.119.239 any eq 22
+
+ ! WEBHOST-SERVICES : dns/ntp/kms
+ permit udp host 119.47.119.240 eq domain any
+ permit udp host 119.47.119.241 eq domain any
+ permit tcp host 119.47.119.240 eq domain any established
+ permit tcp host 119.47.119.241 eq domain any established
+ permit udp host 119.47.119.242 eq 123 any
+ permit udp host 119.47.119.243 eq 123 any
+ permit udp host 119.47.119.244 eq 123 any
+ permit tcp host 119.47.119.40 eq 1688 any established
+
+ ! WEBHOST-MONITORING : nagios/snmp/collectd
+ permit tcp host 202.89.43.31 any eq 5666
+ permit tcp host 119.47.119.31 any eq 5666
+ permit tcp host 202.89.43.31 any eq 22
+ permit tcp host 119.47.119.31 any eq 22
+ permit tcp host 202.89.43.31 any eq 3389
+ permit tcp host 119.47.119.31 any eq 3389
+ permit udp host 119.47.119.44 any eq 161
+ permit udp host 119.47.119.44 eq 25826 any
+ 
+ ! ftp (originating from internet)
+ permit tcp any any eq 21
+ permit tcp any any range 9500 9550
+
+ ! mail (originating from customer)
+ permit tcp any eq 25 any established
+ permit tcp any eq 110 any established
+ permit tcp any eq 143 any established
+ permit tcp any eq 465 any established
+ permit tcp any eq 587 any established
+ permit tcp any eq 993 any established
+ permit tcp any eq 995 any established
+
+ ! mail (originating from internet)
+ permit tcp any any eq 25
+ permit tcp any any eq 110
+ permit tcp any any eq 143
+ permit tcp any any eq 465
+ permit tcp any any eq 587
+ permit tcp any any eq 993
+ permit tcp any any eq 995
+
+ ! misc
+ permit tcp any any eq 22
+ permit tcp any any eq 3389
+ permit tcp host 202.89.43.31 any eq 5666
+ permit tcp any eq 22 any established
+ permit tcp any eq 3389 any established
+ permit tcp any eq 43 any established
+ permit udp any eq 123 any
+ permit tcp any eq 1688 any established
+ ! mysql
+ permit tcp any eq 3306 any established
+ permit tcp any eq 8443 any established
+ ! plesk licensing server
+ permit tcp any eq 5224 any established
+ 
+ ! web (originating from customer)
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+ ! web (originating from internet)
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit tcp any any eq 8443
+ permit tcp any any eq 8880
+
+ ! mysql (originating from internet)
+ permit tcp any any eq 3306
+ 
+ ! DEFAULT
+ deny ip any any
+
+exit
+
+
+! OUTBOUND-FIREWALL
+ip access-list extended CUSTFW-VL222-UP
+
+ ! WEBHOST-DEFAULT
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ ! WEBHOST-VPN
+ permit ip any 172.16.253.0 0.0.0.255
+
+ ! WEBHOST-MANAGEMENT
+ permit tcp any eq 22 host 119.47.119.238 established
+ permit tcp any eq 22 host 119.47.119.239 established
+
+ ! WEBHOST-SERVICES : dns/ntp/kms
+ permit udp any host 119.47.119.240 eq domain
+ permit udp any host 119.47.119.241 eq domain
+ permit tcp any host 119.47.119.240 eq domain
+ permit tcp any host 119.47.119.241 eq domain
+ permit udp any host 119.47.119.242 eq 123
+ permit udp any host 119.47.119.243 eq 123
+ permit udp any host 119.47.119.244 eq 123
+ permit tcp any host 119.47.119.40 eq 1688
+
+ ! WEBHOST-MONITORING : nagios/snmp/collectd
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 5666 host 119.47.119.31 established
+ permit tcp any eq 22 host 202.89.43.31 established
+ permit tcp any eq 22 host 119.47.119.31 established
+ permit tcp any eq 3389 host 202.89.43.31 established
+ permit tcp any eq 3389 host 119.47.119.31 established
+ permit udp any eq 161 host 119.47.119.44
+ permit udp any host 119.47.119.44 eq 25826
+ 
+ ! ftp (originating from internet)
+ permit tcp any eq 21 any established
+ permit tcp any range 9500 9550 any established
+
+ ! mail (originating from customer)
+ permit tcp any any eq 25
+ permit tcp any any eq 110
+ permit tcp any any eq 143
+ permit tcp any any eq 465
+ permit tcp any any eq 587
+ permit tcp any any eq 993
+ permit tcp any any eq 995
+ 
+ ! mail (originating from internet)
+ permit tcp any eq 25 any established
+ permit tcp any eq 110 any established
+ permit tcp any eq 143 any established
+ permit tcp any eq 465 any established
+ permit tcp any eq 587 any established
+ permit tcp any eq 993 any established
+ permit tcp any eq 995 any established
+
+ ! misc
+ permit tcp any eq 22 any established
+ permit tcp any eq 3389 any established
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any any eq 22
+ permit tcp any any eq 3389
+ permit tcp any any eq 43
+ permit udp any any eq 123
+ permit tcp any any eq 1688
+ ! mysql
+ permit tcp any any eq 3306
+ permit tcp any any eq 8443
+ ! plesk licensing server
+ permit tcp any any eq 5224
+
+ ! web (originating from customer)
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+ ! web (originating from internet)
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 8443 any established
+ permit tcp any eq 8880 any established
+
+ ! mysql (originating from internet)
+ permit tcp any eq 3306 any established
+
+ ! DEFAULT
+ deny ip any any
+
+exit
+
+end

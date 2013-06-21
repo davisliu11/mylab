@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# remove sudo entries
+sed -i '/WEBHOST-MGMT-HELPDESK/,/\/WEBHOST-MGMT-HELPDESK/d' /etc/sudoers
+
+if [ "$1" = "remove" ]; then
+	# send notification to serverwatch
+	echo -e "Package has been removed." | mail -s "WEBHOST-MGMT-HELPDESK: Package removed from `cat /opt/webhost/asset`" serverwatch@webdrive.co.nz
+fi

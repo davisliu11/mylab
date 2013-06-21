@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [[ ! $1 =~ ^[a-zA-Z0-9]+$ ]]; then
+	echo "Invalid user"
+	exit
+fi
+
+uid="`grep ^"$1": /etc/passwd | cut -d : -f 3`"
+
+if [ "$uid" = "" ]; then
+	echo "User does not exist"
+	exit
+fi
+
+if [ "$uid" -ge "10000" -o "$uid" -eq "110" ]; then
+#if [ "$uid" -ge "10000" ]; then
+	/bin/su -s /bin/bash "$1" -l
+else
+	echo "Illegal user"
+fi

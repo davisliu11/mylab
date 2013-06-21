@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# remove lock on sudoers.fallback
+chattr -i /opt/webhost/sudoers.fallback

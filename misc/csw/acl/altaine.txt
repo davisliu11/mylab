@@ -1,0 +1,155 @@
+interface Vlan299
+...
+ ip access-group CUSTFW-VL299-UP in
+ ip access-group CUSTFW-VL299-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL299-DOWN
+no ip access-list extended CUSTFW-VL299-UP
+
+
+ip access-list extended CUSTFW-VL299-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses - webdrive, altaine
+ permit ip 172.16.253.0 0.0.0.255 any
+ permit ip host 112.109.64.2 any
+ permit ip host 112.109.64.3 any
+ permit ip host 112.109.64.4 any
+ permit ip host 112.109.64.5 any
+ permit ip host 112.109.64.7 any
+ permit ip host 112.109.64.25 any
+ permit ip host 112.109.64.54 any
+
+ !ref - TAM-967784
+ permit ip 219.88.246.0 0.0.0.255 any
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp host 119.47.119.40 eq 1688 any established
+ permit tcp any eq 25 any established
+ permit tcp any eq 110 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 8180 any established
+ permit tcp any eq 8443 any established
+
+ !outbound filesharing to dev subnet (ref - JRG-472677)
+ permit tcp 112.109.67.120 0.0.0.7 eq 139 any established 
+ permit tcp 112.109.67.120 0.0.0.7 eq 445 any established
+
+ ! REF: UGK-502165 (Web Service)
+ permit tcp any eq 9443 host 119.47.125.74 established
+ permit tcp any eq 9443 host 112.109.65.97 established
+ permit tcp any eq 9443 host 112.109.65.99 established
+
+ ! REF: UGK-502165 (FTP)
+ permit tcp host 83.166.163.203 host 119.47.125.74
+ permit tcp host 83.166.163.203 host 112.109.65.97
+ permit tcp host 83.166.163.203 host 112.109.65.99
+
+ ! inbound http/https
+ !service ips
+ permit tcp any host 119.47.125.75 eq 80
+ permit tcp any host 112.109.65.123 eq 80
+ permit tcp any host 112.109.65.120 eq 80
+ permit tcp any host 112.109.65.119 eq 80
+ permit tcp any host 112.109.65.119 eq 443
+ permit tcp any host 112.109.65.118 eq 80
+ permit tcp any host 112.109.65.118 eq 443
+ permit tcp any host 112.109.65.117 eq 80
+ permit tcp any host 112.109.65.117 eq 443
+ permit tcp any host 112.109.65.116 eq 80
+ permit tcp any host 112.109.65.116 eq 443
+ permit tcp any host 112.109.65.115 eq 80
+ permit tcp any host 112.109.65.115 eq 443
+ ! server ips
+ permit tcp any host 119.47.125.74 eq 80
+ permit tcp any host 112.109.65.97 eq 80
+ permit tcp any host 112.109.65.99 eq 80
+
+ deny ip any any
+exit
+
+
+ip access-list extended CUSTFW-VL299-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses - webdrive, altaine
+ permit ip any 172.16.253.0 0.0.0.255
+ permit ip any host 112.109.64.2
+ permit ip any host 112.109.64.3
+ permit ip any host 112.109.64.4
+ permit ip any host 112.109.64.5
+ permit ip any host 112.109.64.7
+ permit ip any host 112.109.64.25
+ permit ip any host 112.109.64.54
+
+ !ref - TAM-967784
+ permit ip any 219.88.246.0 0.0.0.255
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any host 119.47.119.40 eq 1688
+ permit tcp any any eq 25
+ permit tcp any any eq 110
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit tcp any any eq 8180 
+ permit tcp any any eq 8443
+ 
+ !outbound filesharing to dev subnet (ref - JRG-472677)
+ permit tcp any 112.109.67.120 0.0.0.7 eq 139 
+ permit tcp any 112.109.67.120 0.0.0.7 eq 445
+
+ ! REF: UGK-502165 (Web Service)
+ permit tcp host 119.47.125.74 any eq 9443
+ permit tcp host 112.109.65.97 any eq 9443
+ permit tcp host 112.109.65.99 any eq 9443
+
+ ! REF: UGK-502165 (FTP) 
+ permit tcp host 119.47.125.74 host 83.166.163.203
+ permit tcp host 112.109.65.97 host 83.166.163.203
+ permit tcp host 112.109.65.99 host 83.166.163.203
+
+ ! inbound http/https
+ !service ips
+ permit tcp host 119.47.125.75 eq 80 any established
+ permit tcp host 112.109.65.123 eq 80 any established
+ permit tcp host 112.109.65.120 eq 80 any established
+ permit tcp host 112.109.65.119 eq 80 any established
+ permit tcp host 112.109.65.119 eq 443 any established
+ permit tcp host 112.109.65.118 eq 80 any established
+ permit tcp host 112.109.65.118 eq 443 any established
+ permit tcp host 112.109.65.117 eq 80 any established
+ permit tcp host 112.109.65.117 eq 443 any established
+ permit tcp host 112.109.65.116 eq 80 any established
+ permit tcp host 112.109.65.116 eq 443 any established
+ permit tcp host 112.109.65.115 eq 80 any established
+ permit tcp host 112.109.65.115 eq 443 any established
+ !server ips
+ permit tcp host 119.47.125.74 eq 80 any established
+ permit tcp host 112.109.65.97 eq 80 any established
+ permit tcp host 112.109.65.99 eq 80 any established
+
+ deny ip any any
+exit

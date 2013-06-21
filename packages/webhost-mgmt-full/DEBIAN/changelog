@@ -1,0 +1,17 @@
+webhost-mgmt-full (1.0.2) stable; urgency=low
+
+  * Changed webhost-mgmt-helpdesk from being recommended to being suggested.
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Thu, Jun  7 2012 13:00:04 +1200
+
+webhost-mgmt-full (1.0.1) stable; urgency=low
+
+  * Added recommendation for webhost-mgmt-helpdesk package.
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Thu, Jun  7 2012 11:00:00 +1200
+
+webhost-mgmt-full (1.0.0) stable; urgency=low
+
+  * Initial release.
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Thu, May 10 2012 17:00:04 +1200

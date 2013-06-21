@@ -1,0 +1,43 @@
+<table cellpadding="4" cellspacing="1" border="0" class="DarkLines" width="550">
+
+<tr>
+	<td class="FieldTitleBg" valign="top" width="165"><span class="FieldTitle">{"<txt_server_url>"}</span><br><img src="/images/1.gif" width="160" height="1"></td>
+	<td class="FieldBodyBg" valign="top" width="345">{$server_url}</td>
+</tr>
+
+<tr>
+	<td class="FieldTitleBg" valign="top" width="165"><span class="FieldTitle">{"<txt_username>"}</span><br><img src="/images/1.gif" width="160" height="1"></td>
+	<td class="FieldBodyBg" valign="top" width="345">{$user_name}</td>
+</tr>
+
+<tr>
+	<td class="FieldTitleBg" valign="top" width="165"><span class="FieldTitle">{"<txt_enable_avs>"}</span><br><img src="/images/1.gif" width="160" height="1"></td>
+	<td class="FieldBodyBg" valign="top" width="345">{ ($is_avs_enabled) ? "<txt_yes>" : "<txt_no>"}</td>
+</tr>
+
+<tr>
+  <td class="FieldTitleBg" valign="top" width="165">
+          <span class="FieldTitle">{"<txt_pxpost_trans_check_enabled>"}</span>
+  </td>
+  <td class="FieldBodyBg" valign="top" width="345">{
+                if ($trans_check_enabled){  $OUT.= qq|<img_ok_sign>|; }
+                else { $OUT.= qq|<img_no_sign>|;}
+        }</td>
+</tr>
+
+<tr>
+  <td class="FieldTitleBg" valign="top" width="165">
+          <span class="FieldTitle">{"<txt_pxpost_num_of_tries>"}</span>
+  </td>
+  <td class="FieldBodyBg" valign="top" width="345">{$num_of_tries}</td>
+</tr>
+
+<tr>
+  <td class="FieldTitleBg" valign="top" width="165">
+          <span class="FieldTitle">{"<txt_pxpost_check_status_period_min>"}</span>
+  </td>
+  <td class="FieldBodyBg" valign="top" width="345">{$check_status_period_min}</td>
+</tr>
+
+
+</table>

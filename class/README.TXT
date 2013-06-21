@@ -1,0 +1,1 @@
+class - configuration for a type of server

@@ -1,0 +1,145 @@
+interface Vlan333
+...
+ ip access-group CUSTFW-VL333-UP in
+ ip access-group CUSTFW-VL333-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL333-DOWN
+no ip access-list extended CUSTFW-VL333-UP
+
+ip access-list extended CUSTFW-VL333-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses - unrestricted
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp any eq 25 any established
+ permit tcp any eq 110 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ !fileguardian
+ permit tcp any eq 8443 any established
+ !rsync
+ permit tcp any eq 873 any established
+ !cpanel license outbound
+ permit tcp any eq 2089 any established
+ !soap
+ permit tcp any eq 8080 any established
+
+ 
+
+ !inbound ports
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+ permit tcp any any eq 21
+ permit tcp any any range 9500 9510
+
+ permit tcp any any eq 25
+ permit tcp any any eq 2525
+ permit tcp any any eq 110
+ permit tcp any any eq 993
+ permit tcp any any eq 143
+ permit tcp any any eq 995
+
+ permit tcp host 203.89.163.59 any eq 3306
+
+ !cpanel
+ permit tcp any any eq 2082
+ permit tcp any any eq 2083
+ permit tcp any any eq 2086
+ permit tcp any any eq 2087
+ permit tcp any any eq 2095
+ permit tcp any any eq 2096
+   
+ !ssh
+ permit tcp any any eq 47912
+ !monitoring
+ permit tcp host 202.89.43.31 any eq 5666 
+ !monitoring
+ permit tcp host 202.160.48.92 any eq 43191
+ !TRI-715728
+ permit tcp any any eq 10000
+
+ deny   ip any any
+exit
+
+ip access-list extended CUSTFW-VL333-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses
+ permit ip any 172.16.253.0 0.0.0.255
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any any eq 25
+ permit tcp any any eq 110
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ !fileguardian
+ permit tcp any any eq 8443
+ !rsync
+ permit tcp any any eq 873
+ !cpanel license
+ permit tcp any any eq 2089
+ !soap
+ permit tcp any any eq 8080
+
+ 
+ !inbound ports
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+ permit tcp any eq 21 any established
+ permit tcp any range 9500 9510 any established
+
+ permit tcp any eq 25 any established
+ permit tcp any eq 2525 any established
+ permit tcp any eq 110 any established
+ permit tcp any eq 993 any established
+ permit tcp any eq 143 any established
+ permit tcp any eq 995 any established
+
+ permit tcp any eq 3306 host 203.89.163.59 established
+  
+ !cpanel
+ permit tcp any eq 2082 any established
+ permit tcp any eq 2083 any established
+ permit tcp any eq 2086 any established
+ permit tcp any eq 2087 any established
+ permit tcp any eq 2095 any established
+ permit tcp any eq 2096 any established
+
+ !ssh
+ permit tcp any eq 47912 any established
+ !monitoring
+ permit tcp any eq 5666 host 202.89.43.31 established
+ !monitoring
+ permit tcp any eq 43191 host 202.160.48.92 established
+ !TRI-715728
+ permit tcp any eq 10000 any established
+
+ deny   ip any any
+exit
+end

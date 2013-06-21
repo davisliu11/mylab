@@ -1,0 +1,56 @@
+interface Vlan230
+...
+ ip access-group CUSTFW-VL230-UP in
+ ip access-group CUSTFW-VL230-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL230-DOWN
+no ip access-list extended CUSTFW-VL230-UP
+
+
+ip access-list extended CUSTFW-VL230-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !allow certain ips to reach the f5-mgmt
+ permit ip host 60.234.142.14 any
+ permit ip host 119.224.138.157 any
+ permit ip 202.50.176.192 0.0.0.31 any
+ permit ip host 203.97.154.129 any
+ permit ip host 210.4.209.58 any
+ permit ip host 210.4.209.59 any
+ permit ip host 210.4.209.60 any
+ permit ip host 210.4.209.61 any
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ deny ip any host 112.109.72.217
+ deny ip any host 112.109.72.218
+ permit ip any any
+exit
+
+ip access-list extended CUSTFW-VL230-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !allow certain ips to reach the f5-mgmt
+ permit ip any host 60.234.142.14
+ permit ip any host 119.224.138.157
+ permit ip any 202.50.176.192 0.0.0.31
+ permit ip any host 203.97.154.129
+ permit ip any host 210.4.209.58
+ permit ip any host 210.4.209.59
+ permit ip any host 210.4.209.60
+ permit ip any host 210.4.209.61
+ permit ip any 172.16.253.0 0.0.0.255
+
+ deny ip host 112.109.72.217 any
+ deny ip host 112.109.72.218 any
+ permit ip any any
+exit

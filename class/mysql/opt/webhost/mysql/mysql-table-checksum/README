@@ -1,0 +1,9 @@
+Steve: As per asys-table-sort-by-size.sh the following tables are a bit too large to check with the MD5 process.  It may be better to rely on a count(*) from table.
+
+domain_traffic_log
+da_transaction_log
+log
+
+Example Usage:
+
+/opt/webhost/mysql-table-checksum/asys-table-sort-by-size.sh | egrep -v "^log|^da_transaction_log|^domain_traffic_log" | awk '{print "/opt/webhost/mysql-table-checksum/mysql-table-checksum.php --database asys --table "$1}' > /root/asys-tables-to-check.sh

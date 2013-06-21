@@ -1,0 +1,44 @@
+webhost-php-preview (1.0.6) stable; urgency=high
+
+  * added ulimit to startup script
+  * added 'removing config folder' on start
+
+  -- Thomas Gross <tom@webdrive.co.nz> Wed, 22 Mar 2013 12:08:39 +1300
+
+webhost-php-preview (1.0.5) stable; urgency=high
+
+  * reduced amount of StartServers, MinSpareServers, MaxSpareServers, MaxClients
+  * added fix for primary apache2 crashing: SharememPath apache2.conf
+
+  -- Thomas Gross <tom@webdrive.co.nz> Wed, 20 Mar 2013 09:46:39 +1300
+
+webhost-php-preview (1.0.4) stable; urgency=high
+
+  * Fix for suPHP_ConfigPath: now /etc/webhost-php53-cgi/cgi-default to be php5.3 compatible
+  * added lsof to dependencies
+
+  -- Thomas Gross <tom@webdrive.co.nz> Fri, Jan 25 2013 16:41:00 +1300
+
+webhost-php-preview (1.0.3) stable; urgency=low
+
+  * Fix for PHP 5.3 not being used for some sites
+
+  -- Steve Hogg <steve@webdrive.co.nz> Tue, Oct 24 2012 12:12:00 +1200
+
+webhost-php-preview (1.0.2) stable; urgency=low
+
+  * Fixed messed up firewall rules
+
+  -- Steve Hogg <steve@webdrive.co.nz> Tue, Oct 24 2012 11:05:00 +1200
+
+webhost-php-preview (1.0.1) stable; urgency=low
+
+  * Tidied up stop start and remove of package
+
+  -- Steve Hogg <steve@webdrive.co.nz> Tue, Oct 24 2012 10:51:00 +1200
+
+webhost-php-preview (1.0.0) stable; urgency=low
+
+  * Initial release.
+
+  -- Steve Hogg <steve@webdrive.co.nz> Tue, Oct 23 2012 16:30:40 +1200

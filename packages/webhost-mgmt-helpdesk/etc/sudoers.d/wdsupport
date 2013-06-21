@@ -1,0 +1,54 @@
+# WEBHOST-MGMT-HELPDESK: /etc/sudoers.d/wdsupport
+Defaults:wdsupport !lecture
+Defaults:wdsupport !authenticate
+Defaults:wdsupport  log_year, logfile=/var/log/sudo.log
+
+# Cmnd alias specification
+Cmnd_Alias TIER1_CMD = /bin/ls /var/www/vhosts/*, \
+/bin/rm -fr /home/* , /bin/rm -rf /home/*, /bin/rm -f /home/*, \
+/usr/bin/rsync -av /home/* /home/*, \
+/bin/ls [-al]* /var/www/vhosts/*, /bin/ls [-al]* /home/*, \
+/bin/mv /var/www/vhosts/* /var/www/vhosts/*, /bin/mv /home/* /home/*, \
+/bin/cp /var/www/vhosts/* /var/www/vhosts/*, /bin/cp /home/* /home/*, \
+/bin/cp [-pR]* /var/www/vhosts/* /var/www/vhosts/*, /bin/cp [-pR]* /home/* /home/*, \
+/bin/tar [xpzf]* /var/www/vhosts/*, /bin/tar [xpzf]* /home/*, \
+/bin/gzip /var/www/vhosts/*, /bin/gzip /home/*, \
+/bin/gzip [-d]* /var/www/vhosts/*, /bin/gzip [-d]* /home/*, \
+/usr/bin/zip -r /var/www/vhosts/* /var/www/vhosts/*, /usr/bin/zip -r /home/* /home/*, \
+/usr/bin/unzip /var/www/vhosts/*, /usr/bin/unzip /home/*, \
+/usr/bin/nano /var/www/vhosts/*, /usr/bin/nano /home/*, \
+/usr/bin/less /var/www/vhosts/*, /usr/bin/less /home/*, \
+/usr/bin/less /usr/local/psa/var/log/*, \
+/usr/bin/tail /var/www/vhosts/*, /usr/bin/tail /home/*, \
+/usr/bin/tail /usr/local/psa/var/log/*, \
+/usr/bin/tail /var/log/*, \
+/usr/bin/head /var/www/vhosts/*, /usr/bin/head /home/*, \
+/usr/bin/head /usr/local/psa/var/log/*, \
+/usr/bin/head /var/log/*, \
+/bin/mkdir /var/www/vhosts/*, /bin/mkdir /home/*, \
+/bin/chown [a-zA-Z0-9.\:]* /var/www/vhosts/*, /bin/chown [a-zA-Z0-9.\:]* /home/*, \
+/bin/grep [a-zA-Z0-9.\:]* /usr/local/psa/var/log/*, /bin/grep [a-zA-Z0-9.\:]* /var/log/*, \
+/bin/chmod [0-9]* /var/www/vhosts/*, /bin/chmod [0-9]* /home/*, \
+/usr/bin/find /var/www/vhosts/*, /usr/bin/find /home/*
+
+Cmnd_Alias TIER1_CMD_EXEC = /home/wdsupport/sbin/setuser *, \
+/home/wdsupport/sbin/setdomain *, \
+/home/wdsupport/sbin/setconf *, \
+/home/wdsupport/sbin/lsdomain *, \
+/home/wdsupport/sbin/sudo-chmod *, \
+/home/wdsupport/sbin/sudo-chown *, \
+/home/wdsupport/sbin/sudo-mailq *, \
+/home/wdsupport/sbin/sudo-rm *, \
+/usr/sbin/apache2ctl configtest
+
+Cmnd_Alias TIER1_CMD_PLESK = /opt/psa/admin/sbin/websrvmng --help, \
+/opt/psa/admin/sbin/websrvmng --status, \
+/opt/psa/admin/sbin/websrvmng --start, \
+/opt/psa/admin/sbin/websrvmng --reconfigure-vhost --vhost-name=*, \
+/usr/local/psa/admin/sbin/statistics --calculate-one --domain-name=*
+
+Cmnd_Alias TIER1_CMD_BAD = /usr/bin/nano /var/www/vhosts/*../*
+
+wdsupport ALL=NOPASSWD: TIER1_CMD_EXEC, TIER1_CMD_PLESK
+wdsupport ALL=NOPASSWD: NOEXEC: TIER1_CMD, ! TIER1_CMD_BAD
+# /WEBHOST-MGMT-HELPDESK: /etc/sudoers.d/wdsupport

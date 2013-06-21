@@ -1,0 +1,42 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[LicenseInfo]
+Owner = Noc Operations, Web Drive ltd
+Id = 267756
+LicenseString = ff8b293ae258fe516c39acecb966dba4
+Revision = 3
+
+[LicenseOptions]
+Type = 10
+UserLimit = 9999
+ConcurrentConnections = 999999
+RegistrationDate = 07/21/2010
+ExpirationDate = Never
+HighAvailability = OFF
+SymmetricMultiProcessing = OFF
+IntrusionProtection = OFF
+AVEngine = Astaro
+ClusterNodes = 0
+OEM = off
+LicenseMode = ondemand
+
+[NetworkSecurity]
+Start = 07/26/2010
+Stop = 07/26/2011
+
+[PremiumSupport]
+Start = 07/26/2010
+Stop = 07/26/2011
+
+[StandardSupport]
+Start = 07/26/2010
+Stop = 07/26/2011
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+
+iD8DBQFMiCIu+ts+PoSKFF0RAnW+AJ43pbtha89k9Xyun+hc4g7icG8sEgCgiZCF
+yXwN9BQ7C9FNNNTyBPYZPhI=
+=CCnA
+-----END PGP SIGNATURE-----

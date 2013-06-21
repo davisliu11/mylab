@@ -1,0 +1,102 @@
+interface Vlan312
+...
+ ip access-group CUSTFW-VL312-UP in
+ ip access-group CUSTFW-VL312-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL312-DOWN
+no ip access-list extended CUSTFW-VL312-UP
+
+
+ip access-list extended CUSTFW-VL312-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses - webdrive
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp any eq 25 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+ ! dev server is allowed everything
+ permit ip any host 119.47.126.41
+ 
+ ! inbound ports
+ permit tcp any host 119.47.126.42 eq 80
+ permit tcp any host 119.47.126.42 eq 443
+ 
+ permit tcp host 202.137.243.45 host 119.47.126.42 eq 3389
+ permit tcp host 58.28.152.222 host 119.47.126.42 eq 3389
+ permit tcp host 203.86.201.98 host 119.47.126.42 eq 3389
+ 
+ ! REF:UJY-918478
+ permit tcp host 202.137.243.45 host 119.47.126.42 eq 1433
+ permit tcp host 58.28.152.222 host 119.47.126.42 eq 1433
+ permit tcp host 203.86.201.98 host 119.47.126.42 eq 1433
+
+ ! webdrive monitoring
+ permit tcp host 202.89.43.31 any eq 5666 
+ permit tcp host 119.47.119.31 any eq 5666
+ permit tcp host 202.89.43.31 any eq 3389  
+ permit tcp host 119.47.119.31 any eq 3389  
+
+ deny ip any any
+exit
+
+
+ip access-list extended CUSTFW-VL312-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses - webdrive
+ permit ip any 172.16.253.0 0.0.0.255
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any any eq 25
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+ ! dev server is allowed everything
+ permit ip host 119.47.126.41 any
+
+ ! inbound ports
+ permit tcp host 119.47.126.42 eq 80 any established
+ permit tcp host 119.47.126.42 eq 443 any established
+ permit tcp host 119.47.126.42 eq 3389 host 202.137.243.45 established
+ permit tcp host 119.47.126.42 eq 3389 host 58.28.152.222 established
+ permit tcp host 119.47.126.42 eq 3389 host 203.86.201.98 established
+
+ ! REF:UJY-918478
+ permit tcp host 119.47.126.42 eq 1433 host 202.137.243.45 established
+ permit tcp host 119.47.126.42 eq 1433 host 58.28.152.222 established
+ permit tcp host 119.47.126.42 eq 1433 host 203.86.201.98 established
+
+ ! webdrive monitoring
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 5666 host 119.47.119.31 established
+ permit tcp any eq 3389 host 202.89.43.31 established
+ permit tcp any eq 3389 host 119.47.119.31 established
+  
+ deny ip any any
+exit

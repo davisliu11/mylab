@@ -1,0 +1,14 @@
+#!/bin/bash
+
+NAGIOS="/etc/nagios/nrpe.cfg"
+#Grab the current nagios check
+if [[ "`grep check_mailq_qmail $NAGIOS | grep postfix`" != "" ]]; then
+	CMD="`grep check_mailq_qmail $NAGIOS | cut -d '=' -f 2-`"
+else
+	CMD="`grep check_mailq_qmail $NAGIOS | cut -d '=' -f 2- | cut -d ' ' -f 2-`"
+fi
+
+#Run nagios command
+MAILQ="`$CMD | cut -d '|' -f 1`"
+
+echo $MAILQ

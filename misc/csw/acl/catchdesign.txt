@@ -1,0 +1,28 @@
+interface Vlan277
+...
+ ip access-group CUSTFW-VL277-UP in
+ ip access-group CUSTFW-VL277-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL277-DOWN
+no ip access-list extended CUSTFW-VL277-UP
+
+ip access-list extended CUSTFW-VL277-DOWN
+ ! webdrive vpn
+ permit ip 172.16.253.0 0.0.0.255 any
+ 
+ !explicit deny
+ deny   tcp any any eq 8443
+ deny   tcp any any eq 21
+
+ permit ip any any
+exit
+
+ip access-list extended CUSTFW-VL277-UP
+ !webdrive vpn
+ permit ip any 172.16.253.0 0.0.0.255
+   
+ permit ip any any
+exit
+end

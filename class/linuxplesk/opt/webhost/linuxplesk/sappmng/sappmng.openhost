@@ -1,0 +1,66 @@
+#!/bin/bash
+
+logfile="/tmp/sappmng_wrapper.log"
+echo "sappmng.openhost started" >> $logfile
+
+echo "\n\n" >> $logfile
+
+# Are we doing an install ?
+
+echo "$@" >> $logfile
+
+if_install=`echo "$@" | grep -c "\-\-install-apache-conf"`   ### if command contains  --install-apache-conf
+
+if [ "$if_install" -gt 0 ]; then
+
+############ --> is it oscommerce??
+
+        if_oscommerce=`echo "$@" | sed 's/.*--metadata-file=\(.*\)\.*/\1/' | cut -d' ' -f1 | awk '{print "grep -c oscommerce -i "$0}' | sh`   ### if oscommerce
+        if [ "$if_oscommerce" -gt 0 ]; then
+                echo "Yes, we doing OScommerce" >> $logfile
+
+                vhostpath_1=`echo ${2} | cut -d'=' -f2 `  ### == /var/www/vhosts/lp10.dnserver.net.nz
+                apps_subfolder=`echo "$@" | sed 's/.*config-file-name=\(.*\)\.*/\1/' | awk -F\  '{print $1}'`  ### == e.g. oscommerce.conf
+
+                echo "MOD Path : ${vhostpath_1}/${apps_subfoler}" >> $logfile
+                echo "MOD File : $vhostpath_1/conf/siteapp.d/$apps_subfolder" >> $logfile
+
+                while [ ! -e $vhostpath_1/conf/siteapp.d/$apps_subfolder ];
+                do
+                        # Wait for the files to appear
+                        # We might want to add a 60second counter in here to delay the process until we are done
+                        sleep 1
+                done
+
+                echo -e "<IfModule mod_suphp.c>
+suPHP_ConfigPath /etc/php5/cgi-safemode-off-globals-on
+</IfModule>" >> $vhostpath_1/conf/siteapp.d/$apps_subfolder
+
+        fi
+
+	############ <-- end oscommerce
+
+	############ --> permission fix: app files / folders set to x77 ??
+
+                echo "fixing permissions..." >> $logfile
+		echo  "$@" >> $logfile
+
+                vhostpath_1=`echo ${2} | cut -d'=' -f2 `  ### == /var/www/vhosts/lp10.dnserver.net.nz
+                apps_subfolder=`echo "$@" | sed 's/.*--application-subdirectory=\(.*\)\.*/\1/' | awk -F\  '{print $1}'`
+
+                while [ ! -e $vhostpath_1/httpdocs/$apps_subfolder ];
+                do
+                        sleep 1
+                done
+
+                echo "modifying path : ${vhostpath_1}/${apps_subfolder}" >> $logfile
+		echo "executing: find ${vhostpath_1}/httpdocs/${apps_subfolder} -type f -perm /g+w,o+w -exec chmod 644 {} \;" >> $logfile
+		`which find` ${vhostpath_1}/httpdocs/${apps_subfolder} -type f -perm /g+w,o+w -exec chmod 644 {} \;
+		echo "executing: find ${vhostpath_1}/httpdocs/${apps_subfolder} -type d -perm /g+w,o+w -exec chmod 755 {} \;" >> $logfile
+		`which find` ${vhostpath_1}/httpdocs/${apps_subfolder} -type d -perm /g+w,o+w -exec chmod 755 {} \;
+		
+	############ <-- end permission fix
+fi
+
+echo -n "\n\n`date` \n We are done." >> $logfile
+

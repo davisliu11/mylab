@@ -1,0 +1,303 @@
+interface Vlan270
+...
+ ip access-group CUSTFW-VL270-UP in
+ ip access-group CUSTFW-VL270-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL270-DOWN
+no ip access-list extended CUSTFW-VL270-UP
+
+ip access-list extended CUSTFW-VL270-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp any eq 25 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ !fileguardian
+ permit tcp any eq 8443 any established
+
+ !inbound ports
+ permit tcp any host 119.47.121.73 eq 80
+ permit tcp any host 119.47.121.73 eq 443
+ permit tcp any host 119.47.121.74 eq 80
+ permit tcp any host 119.47.121.74 eq 443
+ permit tcp any host 119.47.121.75 eq 80
+ permit tcp any host 119.47.121.75 eq 443
+ permit tcp any host 112.109.67.97 eq 80
+ permit tcp any host 112.109.67.97 eq 443
+ permit tcp any host 112.109.67.97 eq 22
+ permit tcp any host 112.109.67.98 eq 80
+ permit tcp any host 112.109.67.98 eq 443
+ permit tcp any host 112.109.67.99 eq 80
+ permit tcp any host 112.109.67.99 eq 443
+ permit tcp any host 112.109.67.100 eq 80
+ permit tcp any host 112.109.67.100 eq 443
+ permit tcp any host 112.109.67.101 eq 80
+ permit tcp any host 112.109.67.101 eq 443
+ permit tcp any host 112.109.67.102 eq 80
+ permit tcp any host 112.109.67.102 eq 443
+ permit tcp any host 112.109.67.103 eq 80
+ permit tcp any host 112.109.67.103 eq 443
+ permit tcp any host 112.109.67.104 eq 80
+ permit tcp any host 112.109.67.104 eq 443
+ permit tcp any host 112.109.67.105 eq 80
+ permit tcp any host 112.109.67.105 eq 443
+ permit tcp any host 112.109.67.106 eq 80
+ permit tcp any host 112.109.67.106 eq 443
+ permit tcp any host 112.109.67.107 eq 80
+ permit tcp any host 112.109.67.107 eq 443
+ permit tcp any host 112.109.67.108 eq 80
+ permit tcp any host 112.109.67.108 eq 443
+ permit tcp any host 112.109.67.109 eq 80
+ permit tcp any host 112.109.67.109 eq 443
+ permit tcp any host 119.47.121.73 eq 21
+ permit tcp any host 119.47.121.73 range 9500 9510
+ permit tcp any host 119.47.121.75 eq 21
+ permit tcp any host 119.47.121.75 range 9500 9510
+ permit tcp any host 112.109.67.105 eq 21
+ permit tcp any host 112.109.67.105 range 9500 9510
+ permit tcp any host 112.109.67.109 eq 21
+ permit tcp any host 112.109.67.109 range 9500 9510
+
+ !inbound selective sources for rdp, ssh 
+ permit tcp host 203.144.40.146 host 119.47.121.73 eq 22
+ permit tcp host 116.89.224.147 host 119.47.121.73 eq 22
+ permit tcp host 202.49.99.193 host 119.47.121.73 eq 22
+ permit tcp host 202.49.101.193 host 119.47.121.73 eq 22
+ permit tcp host 121.98.113.46 host 119.47.121.73 eq 22
+ permit tcp host 121.79.209.96 host 119.47.121.73 eq 22
+ permit tcp host 121.73.130.220 host 119.47.121.73 eq 22
+ permit tcp host 119.47.121.129 host 119.47.121.73 eq 22
+ permit tcp host 124.197.53.17 host 119.47.121.73 eq 22
+ permit tcp host 121.98.213.239 host 119.47.121.73 eq 22
+ permit tcp host 222.154.230.155 host 119.47.121.73 eq 22
+ ! REF: RKO-677460
+ permit tcp host 203.96.59.101 host 119.47.121.73 eq 22
+ permit tcp host 203.96.59.102 host 119.47.121.73 eq 22
+ permit tcp host 203.96.49.15 host 119.47.121.73 eq 22
+ ! REF: MWU-783234
+ permit tcp host 203.96.59.101 host 112.109.67.109 eq 22
+ permit tcp host 203.96.59.102 host 112.109.67.109 eq 22
+ permit tcp host 203.96.49.15 host 112.109.67.109 eq 22
+ ! REF: LIZ-632673
+ permit tcp host 114.23.245.142 host 112.109.67.109 eq 22
+ permit tcp host 124.157.101.2 host 112.109.67.109 eq 22
+ permit tcp host 124.157.101.1 host 112.109.67.109 eq 22
+ 
+ permit tcp host 203.144.40.146 host 119.47.121.75 eq 3389
+ permit tcp host 116.89.224.147 host 119.47.121.75 eq 3389
+ permit tcp host 202.49.99.193 host 119.47.121.75 eq 3389
+ permit tcp host 202.49.101.193 host 119.47.121.75 eq 3389
+ permit tcp host 121.98.113.46 host 119.47.121.75 eq 3389
+ permit tcp host 124.197.53.17 host 119.47.121.75 eq 3389
+ permit tcp host 121.98.213.239 host 119.47.121.75 eq 3389
+ permit tcp host 222.154.230.155 host 119.47.121.75 eq 3389
+ permit tcp host 203.100.208.67 host 119.47.121.75 eq 3389
+ permit tcp host 203.144.40.146 host 112.109.67.105 eq 3389
+ permit tcp host 116.89.224.147 host 112.109.67.105 eq 3389
+ permit tcp host 202.49.99.193 host 112.109.67.105 eq 3389
+ permit tcp host 202.49.101.193 host 112.109.67.105 eq 3389
+ permit tcp host 121.98.113.46 host 112.109.67.105 eq 3389
+ permit tcp host 124.197.53.17 host 112.109.67.105 eq 3389
+ permit tcp host 121.98.213.239 host 112.109.67.105 eq 3389
+ permit tcp host 222.154.230.155 host 112.109.67.105 eq 3389
+
+ !inbound selective sources for HTTP/8080 (phpMyADmin)
+ permit tcp host 203.144.40.146 host 119.47.121.74 eq 8080
+ permit tcp host 116.89.224.147 host 119.47.121.74 eq 8080
+ permit tcp host 119.47.119.210 host 119.47.121.74 eq 8080
+ permit tcp host 60.234.200.94 host 119.47.121.74 eq 8080
+ permit tcp host 203.109.200.143 host 119.47.121.74 eq 8080
+ permit tcp host 80.80.133.103 host 119.47.121.74 eq 8080
+ permit tcp host 203.96.207.125 host 119.47.121.74 eq 8080
+ permit tcp host 123.255.47.195 host 119.47.121.74 eq 8080
+ permit tcp host 124.157.101.1 host 119.47.121.74 eq 8080
+ permit tcp host 124.157.101.2 host 119.47.121.74 eq 8080
+
+ ! REF:BFD-453763
+ permit tcp host 60.234.247.128 host 119.47.121.75 eq 1433
+
+ ! REF:EHQ-855756
+ permit tcp any host 112.109.67.109 eq 8443
+ permit tcp any host 112.109.67.109 eq 3306
+ permit tcp any eq 5224 host 112.109.67.109 established
+ 
+ !monitoring
+ permit tcp host 202.89.43.31 any eq 5666 
+ permit tcp host 202.89.43.31 any eq 22
+ permit tcp host 202.89.43.31 any eq 3389
+
+ !webdrive ssh/rdp
+ permit tcp host 119.47.119.238 any eq 22
+ permit tcp host 119.47.119.239 any eq 22
+ permit tcp 172.16.253.0 0.0.0.255 any eq 3389 
+
+ !explicit deny for anything not matching ssh/rdp
+ deny tcp any any eq 22
+ deny tcp any any eq 3389
+     
+ !vpn addresses - access to everything not explicitly blocked
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ deny   ip any any
+exit
+
+ip access-list extended CUSTFW-VL270-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any any eq 25
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ !fileguardian
+ permit tcp any any eq 8443
+
+ 
+ !inbound ports
+ permit tcp host 119.47.121.73 eq 80 any established
+ permit tcp host 119.47.121.73 eq 443 any established
+ permit tcp host 119.47.121.74 eq 80 any established
+ permit tcp host 119.47.121.74 eq 443 any established
+ permit tcp host 119.47.121.75 eq 80 any established
+ permit tcp host 119.47.121.75 eq 443 any established
+ permit tcp host 112.109.67.97 eq 80 any established
+ permit tcp host 112.109.67.97 eq 443 any established
+ permit tcp host 112.109.67.97 eq 22 any established
+ permit tcp host 112.109.67.98 eq 80 any established
+ permit tcp host 112.109.67.98 eq 443 any established
+ permit tcp host 112.109.67.99 eq 80 any established
+ permit tcp host 112.109.67.99 eq 443 any established
+ permit tcp host 112.109.67.100 eq 80 any established
+ permit tcp host 112.109.67.100 eq 443 any established
+ permit tcp host 112.109.67.101 eq 80 any established
+ permit tcp host 112.109.67.101 eq 443 any established
+ permit tcp host 112.109.67.102 eq 80 any established
+ permit tcp host 112.109.67.102 eq 443 any established
+ permit tcp host 112.109.67.103 eq 80 any established
+ permit tcp host 112.109.67.103 eq 443 any established
+ permit tcp host 112.109.67.104 eq 80 any established
+ permit tcp host 112.109.67.104 eq 443 any established
+ permit tcp host 112.109.67.105 eq 80 any established
+ permit tcp host 112.109.67.105 eq 443 any established
+ permit tcp host 112.109.67.106 eq 80 any established
+ permit tcp host 112.109.67.106 eq 443 any established
+ permit tcp host 112.109.67.107 eq 80 any established
+ permit tcp host 112.109.67.107 eq 443 any established
+ permit tcp host 112.109.67.108 eq 80 any established
+ permit tcp host 112.109.67.108 eq 443 any established
+ permit tcp host 112.109.67.109 eq 80 any established
+ permit tcp host 112.109.67.109 eq 443 any established
+ permit tcp host 119.47.121.73 eq 21 any established
+ permit tcp host 119.47.121.73 range 9500 9510 any established
+ permit tcp host 119.47.121.75 eq 21 any established
+ permit tcp host 119.47.121.75 range 9500 9510 any established
+ permit tcp host 112.109.67.105 eq 21 any established
+ permit tcp host 112.109.67.105 range 9500 9510 any established
+ permit tcp host 112.109.67.109 eq 21 any established
+ permit tcp host 112.109.67.109 range 9500 9510 any established
+
+ !inbound selective sources for rdp and ssh
+ permit tcp host 119.47.121.73 eq 22 host 203.144.40.146 established
+ permit tcp host 119.47.121.73 eq 22 host 116.89.224.147 established
+ permit tcp host 119.47.121.73 eq 22 host 202.49.99.193 established
+ permit tcp host 119.47.121.73 eq 22 host 202.49.101.193 established
+ permit tcp host 119.47.121.73 eq 22 host 121.98.113.46 established
+ permit tcp host 119.47.121.73 eq 22 host 121.79.209.96 established
+ permit tcp host 119.47.121.73 eq 22 host 121.73.130.220 established
+ permit tcp host 119.47.121.73 eq 22 host 119.47.121.129 established
+ permit tcp host 119.47.121.73 eq 22 host 124.197.53.17 established
+ permit tcp host 119.47.121.73 eq 22 host 121.98.213.239 established
+ permit tcp host 119.47.121.73 eq 22 host 222.154.230.155 established
+ ! REF: RKO-677460
+ permit tcp host 119.47.121.73 eq 22 host 203.96.59.101 established
+ permit tcp host 119.47.121.73 eq 22 host 203.96.59.102 established
+ permit tcp host 119.47.121.73 eq 22 host 203.96.49.15 established
+ ! REF: MWU-783234
+ permit tcp host 112.109.67.109 eq 22 host 203.96.59.101 established
+ permit tcp host 112.109.67.109 eq 22 host 203.96.59.102 established
+ permit tcp host 112.109.67.109 eq 22 host 203.96.49.15 established
+! REF: LIZ-632673
+ permit tcp host 112.109.67.109 eq 22 host 114.23.245.142 established
+ permit tcp host 112.109.67.109 eq 22 host 124.157.101.2 established
+ permit tcp host 112.109.67.109 eq 22 host 124.157.101.1 established
+
+ permit tcp host 119.47.121.75 eq 3389 host 203.144.40.146 established
+ permit tcp host 119.47.121.75 eq 3389 host 116.89.224.147 established
+ permit tcp host 119.47.121.75 eq 3389 host 202.49.99.193 established
+ permit tcp host 119.47.121.75 eq 3389 host 202.49.101.193 established
+ permit tcp host 119.47.121.75 eq 3389 host 121.98.113.46 established
+ permit tcp host 119.47.121.75 eq 3389 host 124.197.53.17 established
+ permit tcp host 119.47.121.75 eq 3389 host 121.98.213.239 established
+ permit tcp host 119.47.121.75 eq 3389 host 222.154.230.155 established
+ permit tcp host 119.47.121.75 eq 3389 host 203.100.208.67 established
+ permit tcp host 112.109.67.105 eq 3389 host 203.144.40.146 established
+ permit tcp host 112.109.67.105 eq 3389 host 116.89.224.147 established
+ permit tcp host 112.109.67.105 eq 3389 host 202.49.99.193 established
+ permit tcp host 112.109.67.105 eq 3389 host 202.49.101.193 established
+ permit tcp host 112.109.67.105 eq 3389 host 121.98.113.46 established
+ permit tcp host 112.109.67.105 eq 3389 host 124.197.53.17 established
+ permit tcp host 112.109.67.105 eq 3389 host 121.98.213.239 established
+ permit tcp host 112.109.67.105 eq 3389 host 222.154.230.155 established
+
+ !inbound selective sources for HTTP/8080 (phpMyADmin)
+ permit tcp host 119.47.121.74 eq 8080 host 203.144.40.146 established
+ permit tcp host 119.47.121.74 eq 8080 host 116.89.224.147 established
+ permit tcp host 119.47.121.74 eq 8080 host 119.47.119.210 established
+ permit tcp host 119.47.121.74 eq 8080 host 60.234.200.94 established
+ permit tcp host 119.47.121.74 eq 8080 host 203.109.200.143 established
+ permit tcp host 119.47.121.74 eq 8080 host 80.80.133.103 established
+ permit tcp host 119.47.121.74 eq 8080 host 203.96.207.125 established
+ permit tcp host 119.47.121.74 eq 8080 host 123.255.47.195 established
+ permit tcp host 119.47.121.74 eq 8080 host 124.157.101.1 established
+ permit tcp host 119.47.121.74 eq 8080 host 124.157.101.2 established
+
+ ! REF:BFD-453763
+ permit tcp host 119.47.121.75 eq 1433 host 60.234.247.128 established
+
+ ! REF:EHQ-855756
+ permit tcp host 112.109.67.109 eq 8443 any established
+ permit tcp host 112.109.67.109 eq 3306 any established
+ permit tcp host 112.109.67.109 any eq 5224
+
+ !monitoring
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 22 host 202.89.43.31 established
+ permit tcp any eq 3389 host 202.89.43.31 established
+
+ !web drive ssh/rdp
+ permit tcp any eq 22 host 119.47.119.238 established
+ permit tcp any eq 22 host 119.47.119.239 established
+ permit tcp any eq 3389 172.16.253.0 0.0.0.255 established
+ 
+ !explicit deny for anything not matching for ssh/rdp
+ deny tcp any eq 22 any established 
+ deny tcp any eq 3389 any established 
+   
+ !vpn addresses - access everything not explicitly blocked.
+ permit ip any 172.16.253.0 0.0.0.255
+
+ deny   ip any any
+exit
+end

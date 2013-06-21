@@ -1,0 +1,184 @@
+interface Vlan220
+...
+ ip access-group CUSTFW-VL220-UP in
+ ip access-group CUSTFW-VL220-DOWN out
+...
+end
+
+
+no ip access-list extended CUSTFW-VL220-DOWN
+no ip access-list extended CUSTFW-VL220-UP
+
+
+ip access-list extended CUSTFW-VL220-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ntp
+ permit udp host 119.47.119.242 eq 123 any
+ permit udp host 119.47.119.243 eq 123 any
+ permit udp host 119.47.119.244 eq 123 any
+
+
+ ! outbound ports
+ permit tcp any eq 22 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 25 any established
+ permit tcp any eq 465 any established
+ permit tcp any eq 587 any established
+
+ permit tcp any eq 8443 host 112.109.67.33 established
+
+ ! nielsen booking data
+ permit ip host 213.212.94.180 host 112.109.67.33
+
+ !monitoring
+ permit tcp host 202.89.43.31 any eq 5666 
+ permit tcp host 119.47.119.31 any eq 5666 
+ permit tcp host 202.89.43.31 any eq 22
+ permit tcp host 119.47.119.31 any eq 22
+ permit udp host 119.47.119.44 any eq snmp
+ permit udp host 119.47.119.44 eq 25826 any
+ permit udp host 172.16.254.73 any eq snmp
+ permit udp host 172.16.254.73 eq 25826 any
+
+ !webdrive ssh
+ permit tcp host 119.47.119.238 any eq 22
+ permit tcp host 119.47.119.239 any eq 22
+
+ ! customer ssh
+ permit tcp any host 112.109.67.33 eq 22
+
+ !explicit deny for anything not matching ssh
+ deny tcp any any eq 22
+     
+ ! vpn addresses - access to everything not explicitly blocked
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ ! customer static ip
+ permit ip host 125.214.72.144 any 
+
+ ! customer suppliers
+ permit tcp host 82.1.15.235 any established
+ permit tcp host 203.97.93.184 any established
+ permit tcp host 122.56.11.40 any established
+ permit tcp host 198.183.165.13 any established
+ permit tcp host 203.206.174.60 any established
+ permit tcp host 203.26.59.2 any established
+ permit tcp host 202.9.94.187 any established
+ permit tcp host 165.69.163.9 any established
+ permit tcp host 138.108.97.14 any established
+ permit tcp host 203.46.70.132 any established
+
+ ! munin
+ !permit tcp any host 112.109.67.33 eq 4949
+
+ ! db1 - explicitly deny anything not already allowed
+ deny ip any host 112.109.67.34
+
+ ! inbound  
+ permit tcp any host 112.109.67.33 eq 21
+ permit tcp any host 112.109.67.33 range 9500 9510
+
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+
+ deny   ip any any
+exit
+
+
+ip access-list extended CUSTFW-VL220-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ntp
+ permit udp any host 119.47.119.242 eq 123
+ permit udp any host 119.47.119.243 eq 123
+ permit udp any host 119.47.119.244 eq 123
+ 
+ ! outbound ports
+ permit tcp any any eq 22
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit tcp any any eq 25
+ permit tcp any any eq 465
+ permit tcp any any eq 587
+
+ permit tcp host 112.109.67.33 any eq 8443
+
+ ! nielsen booking data
+ permit ip host 112.109.67.33 host 213.212.94.180
+
+ !monitoring
+ permit tcp any eq 5666 host 202.89.43.31 established
+ permit tcp any eq 5666 host 119.47.119.31 established
+ permit tcp any eq 22 host 202.89.43.31 established
+ permit tcp any eq 22 host 119.47.119.31 established
+ permit udp any eq snmp host 119.47.119.44
+ permit udp any host 119.47.119.44 eq 25826
+ permit udp any eq snmp host 172.16.254.73
+ permit udp any host 172.16.254.73 eq 25826
+
+ !web drive ssh
+ permit tcp any eq 22 host 119.47.119.238 established
+ permit tcp any eq 22 host 119.47.119.239 established
+ !customer ssh
+ permit tcp host 112.109.67.33 eq 22 any established
+ 
+ !explicit deny for anything not matching for ssh/rdp
+ deny tcp any eq 22 any established 
+   
+ !vpn addresses - access everything not explicitly blocked.
+ permit ip any 172.16.253.0 0.0.0.255
+ ! customer static ip
+ permit ip any host 125.214.72.144 
+
+ ! customer suppliers
+ ! also set on web server iptables
+ permit tcp any host 82.1.15.235
+ permit tcp any host 203.97.93.184
+ permit tcp any host 122.56.11.40
+ permit tcp any host 198.183.165.13
+ permit tcp any host 203.206.174.60
+ permit tcp any host 203.26.59.2
+ permit tcp any host 202.9.94.187
+ permit tcp any host 165.69.163.9
+ permit tcp any host 138.108.97.14
+ permit tcp any host 203.46.70.132
+
+ ! munin
+ !permit tcp host 112.109.67.33 eq 4949 any established
+
+ ! db1 - explicitly deny everything not already allowed
+ deny ip host 112.109.66.34 any
+
+ ! inbound  
+ ! web1
+ permit tcp host 112.109.67.33 eq 21 any established
+ permit tcp host 112.109.67.33 range 9500 9510 any established
+
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+
+ deny ip any any
+exit
+

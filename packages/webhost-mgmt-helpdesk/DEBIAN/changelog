@@ -1,0 +1,71 @@
+webhost-mgmt-helpdesk (1.0.33) stable; urgency=low
+
+  * Added SSH keys for Pulkit Gupta / Martin Bourne
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Wed, May 29 2013 11:42:37 +1200
+
+webhost-mgmt-helpdesk (1.0.32) stable; urgency=low
+
+  * Prevent removal of name matching from root's ssh key if the line also matches ssh-[dr]sa
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Wed, Apr 10 2013 17:31:12 +1300
+
+webhost-mgmt-helpdesk (1.0.31) stable; urgency=low
+
+  * Fixed typo
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Thu, Apr  4 2013 12:22:38 +1300
+
+webhost-mgmt-helpdesk (1.0.30) stable; urgency=low
+
+  * Added SSH key for Reagan Diaz
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Thu, Apr  4 2013 11:29:38 +1300
+
+webhost-mgmt-helpdesk (1.0.28) stable; urgency=low
+
+  * Added SSH key for Will Fifield
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Fri, Nov  9 2012 11:17:16 +1300
+
+webhost-mgmt-helpdesk (1.0.27) stable; urgency=low
+
+  * Added SSH key for James Watson
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Thu, Oct 25 2012 13:52:39 +1300
+
+webhost-mgmt-helpdesk (1.0.26) stable; urgency=low
+
+  * Added SSH key for Shylo Hana
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Tue, Sep 25 2012 17:00:00 +1200
+
+webhost-mgmt-helpdesk (1.0.25) stable; urgency=low
+
+  * Changed setconf script to support PHP 5.3
+
+  -- Steve Hogg <steve@webdrive.co.nz> Sat, Sep 15 2012 20:00:00 +1200
+
+webhost-mgmt-helpdesk (1.0.24) stable; urgency=low
+
+  * Removed ssh key for Helen
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Fri, Sep  7 2012 16:40:20 +1200
+
+webhost-mgmt-helpdesk (1.0.23) stable; urgency=low
+
+  * Added zip and rsync sudo commands for the helpdesk
+
+  -- Steve Hogg <steve@webdrive.co.nz> Mon, Aug 27 2012 16:25:00 +1200
+
+webhost-mgmt-helpdesk (1.0.22) stable; urgency=low
+
+  * Added nasops sudo commands for the helpdesk
+
+  -- Steve Hogg <steve@webdrive.co.nz> Mon, Aug 20 2012 16:36:13 +1200
+
+webhost-mgmt-helpdesk (1.0.0) stable; urgency=low
+
+  * Initial release.
+
+  -- Aristoteles Neto <neto@webdrive.co.nz> Tue, Jun  5 2012 17:00:04 +1200

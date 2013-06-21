@@ -1,0 +1,103 @@
+<!--         RIBCL Sample Script for HP Lights-Out Products          -->
+<!--Copyright (c) 2012 Hewlett-Packard Development Company, L.P.     -->
+
+<!-- Description:  This is a sample XML script to configure the      -->
+<!--               network settings for following devices:           -->
+<!--                 Integrated Lights-Out 4 (iLO 4)                 -->
+<!--                 Integrated Lights-Out 3 (iLO 3)                 -->
+<!--                 Integrated Lights-Out 2 (iLO 2)                 -->
+
+<!-- NOTE:  You will need to replace the USER_LOGIN and PASSWORD     -->
+<!--        and other values inside the quotation marks with values  -->
+<!--        that are appropriate for your environment.               -->
+
+<!--        Double check all values before executing this script.    -->
+<!--        Incorrect or mismatched network settings may cause you   -->
+<!--        to lose the ability to connect to your Lights-Out device.-->
+
+<!--        Use CPQLOCFG.EXE ver 4.00 or greater with this script.   -->
+
+<!--        This script was written for iLO 4 firmware version 1.01  -->
+<!--        release.                                                 -->
+
+<!--        See "HP Integrated Lights-Out Management Processor       -->
+<!--        Scripting and Command Line Resource Guide" for more      -->
+<!--        information on scripting and the syntax of the RIBCL     -->
+<!--        XML.                                                     -->
+
+<!--        Firmware support information for this script:            -->
+<!--            iLO 4 - All versions.                                -->
+<!--            iLO 3 - All versions.                                -->
+<!--            iLO 2 - All versions.                                -->
+
+<RIBCL VERSION="2.0">
+   <LOGIN USER_LOGIN="adminname" PASSWORD="password">
+      <SERVER_INFO MODE="write">
+         <SERVER_NAME value ="Hindin-Server1"/>
+      </SERVER_INFO>
+	  <RIB_INFO MODE="write">
+         <MOD_NETWORK_SETTINGS>
+            <!--        Firmware support information for next 4 tags :     -->
+            <!--            iLO 4 - All versions.                          -->
+            <!--            iLO 3 - All versions.                          -->
+            <!--            iLO 2 - All versions.                          -->            
+            <ENABLE_NIC value="Yes"/>
+            <REG_DDNS_SERVER value="No"/>
+            <PING_GATEWAY value="No"/>
+            <DHCP_DOMAIN_NAME value="Yes"/>
+			<SHARED_NETWORK_PORT VALUE="Yes"/>
+            <!--        Firmware support information for next 2 tags:        -->
+            <!--            iLO 4 - All versions.                            -->
+            <!--            iLO 3 - All versions.                            -->
+            <!--            iLO 2 - Version 1.10 or later.                   -->            
+            <VLAN_ENABLED VALUE="No"/>
+            <VLAN_ID VALUE="1"/>
+			<!--        Firmware support information for next 22 tags :    -->
+            <!--            iLO 4 - All versions.                          -->
+            <!--            iLO 3 - All versions.                          -->
+            <!--            iLO 2 - All versions.                          -->            
+            <SPEED_AUTOSELECT value="YES"/>
+            <NIC_SPEED value="100"/>
+            <FULL_DUPLEX value="Yes"/>
+            <DHCP_ENABLE value="No"/>
+            <IP_ADDRESS value="112.109.72.251"/>
+            <SUBNET_MASK value="255.255.255.248"/>
+            <GATEWAY_IP_ADDRESS value="112.109.72.254"/>
+            <DNS_NAME value="hindin-server1-ilo"/>
+            <DOMAIN_NAME value="webhost.co.nz"/>
+            <DHCP_GATEWAY value="Yes"/>
+            <DHCP_DNS_SERVER value="No"/>
+            <DHCP_WINS_SERVER value="Yes"/>
+            <DHCP_STATIC_ROUTE value="Yes"/>
+            <REG_WINS_SERVER value="No"/>
+            <PRIM_DNS_SERVER value="119.47.119.240"/>
+            <SEC_DNS_SERVER value="119.47.119.241"/>
+            <TER_DNS_SERVER value="0.0.0.0"/>
+            <PRIM_WINS_SERVER value="0.0.0.0"/>
+            <SEC_WINS_SERVER value="0.0.0.0"/>
+            <STATIC_ROUTE_1 DEST="0.0.0.0" GATEWAY="0.0.0.0"/>
+            <STATIC_ROUTE_2 DEST="0.0.0.0" GATEWAY="0.0.0.0"/>
+            <STATIC_ROUTE_3 DEST="0.0.0.0" GATEWAY="0.0.0.0"/>
+            <!--        Firmware support infomation for next 4 tags :      -->
+            <!--            iLO 4 - All versions.                          -->
+            <!--            iLO 3 - All versions.                          -->
+            <!--            iLO 2 - None.                                  -->           
+            <DHCP_SNTP_SETTINGS value="No"/>
+            <SNTP_SERVER1 value="119.47.119.242"/>
+            <SNTP_SERVER2 value="119.47.119.243"/>
+            <TIMEZONE value="Pacific/Auckland"/>
+            <!-- This tag can be used on an iLO blade server to force iLO  -->
+            <!-- to attempt to get an IP address from the signal backplane -->
+            <!-- in a server enclosure.  The IP address must be set prior  -->
+            <!-- with Mod_Enc_Bay_IP_Settings.xml                          -->
+            <!--        Firmware support information for next tag:         -->
+            <!--            iLO 4 - All versions.                          -->
+            <!--            iLO 3 - All versions.                          -->
+            <!--            iLO 2 - All versions.                          -->            
+            <!--
+            <ENCLOSURE_IP_ENABLE VALUE="Yes"/>
+            -->            
+         </MOD_NETWORK_SETTINGS>
+      </RIB_INFO>
+   </LOGIN>
+</RIBCL>

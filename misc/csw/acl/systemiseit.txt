@@ -1,0 +1,99 @@
+interface Vlan285
+...
+ ip access-group CUSTFW-VL285-UP in
+ ip access-group CUSTFW-VL285-DOWN out
+...
+end
+
+no ip access-list extended CUSTFW-VL285-DOWN
+no ip access-list extended CUSTFW-VL285-UP
+
+ip access-list extended CUSTFW-VL285-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses
+ permit ip 172.16.253.0 0.0.0.255 any
+ permit ip host 112.109.64.44 any
+ permit ip host 112.109.64.45 any
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq 53 any
+ permit udp host 119.47.119.241 eq 53 any
+ permit tcp host 119.47.119.240 eq 53 any established
+ permit tcp host 119.47.119.241 eq 53 any established
+
+ !outbound ports
+ permit tcp host 119.47.119.40 eq 1688 any established
+ permit tcp any eq 25 any established
+ permit tcp any eq 80 any established
+ permit tcp any eq 8080 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 8443 any established
+ permit tcp any eq 22 any established
+
+ !inbound ports
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit tcp any any eq 21
+ permit tcp any any range 9500 9510
+
+ !inbound selective networks for rdp
+ permit tcp host 222.154.250.15 any eq 3389
+ permit tcp host 202.89.53.241 any eq 3389
+
+ !inboud customer ssh
+ permit tcp host 60.234.24.162 any eq 22
+ permit tcp host 222.154.250.15 any eq 22
+
+ deny   ip any any
+exit
+
+ip access-list extended CUSTFW-VL285-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses
+ permit ip any 172.16.253.0 0.0.0.255
+ permit ip any host 112.109.64.44
+ permit ip any host 112.109.64.45
+
+ !outbound dns
+ permit udp any host 119.47.119.240 eq 53
+ permit udp any host 119.47.119.241 eq 53
+ permit tcp any host 119.47.119.240 eq 53
+ permit tcp any host 119.47.119.241 eq 53
+
+ !outbound ports
+ permit tcp any host 119.47.119.40 eq 1688
+ permit tcp any any eq 25
+ permit tcp any any eq 80
+ permit tcp any any eq 8080
+ permit tcp any any eq 443
+ permit tcp any any eq 8443
+ permit tcp any any eq 22
+
+ 
+ !inbound ports
+ permit tcp any eq 80 any established
+ permit tcp any eq 443 any established
+ permit tcp any eq 21 any established
+ permit tcp any range 9500 9510 any established
+
+ !inbound selective networks for rdp
+ permit tcp any eq 3389 host 222.154.250.15 established
+ permit tcp any eq 3389 host 202.89.53.241 established
+
+ !inbound customer ssh
+ permit tcp any eq 22 host 60.234.24.162 established
+ permit tcp any eq 22 host 222.154.250.15 established
+
+ deny   ip any any
+exit
+end

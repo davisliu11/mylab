@@ -1,0 +1,127 @@
+#!/bin/bash
+
+usage()
+{
+cat << EOF
+
+usage: $0 options
+
+OPTIONS:
+   -h      Show this message
+   -s      Output stats even if FS is OK
+
+EOF
+}
+
+while getopts "sh" OPTION
+do
+     case $OPTION in
+         s)
+             SHOWSTATS=1
+             ;;
+         h)
+             usage
+             exit
+             ;;
+         *)
+             usage
+             exit
+             ;;
+     esac
+done
+
+EXITVAL=0
+
+mounts="`mount | egrep 'type ext[34]'`"
+
+OLDIFS=$IFS
+IFS=$'\n'
+for mount in $mounts; do
+	disk="`echo $mount | awk '{print $1}'`"
+	status="`echo $mount | rev | cut -d "(" -f 1 | awk '{print $1}' | rev | cut -d "," -f 1`"
+	devpath="`echo $disk | sed 's,/dev/,,' | sed 's,/,\!,'`"
+	devpath="/sys/block/${devpath%?}"
+
+	if [ -f "$devpath/device/timeout" ]; then
+		timeout="`cat $devpath/device/timeout`"
+	else
+		timeout=UNKNOWN
+	fi
+
+	fsinfo="`tune2fs -l $disk | egrep "^Next check after|^Mount count|^Maximum mount count"`"
+	mountcount=`echo "$fsinfo" | grep "^Mount count:" | perl -pi -e 's/^Mount count:[\W]+//'`
+	mountcountmax=`echo "$fsinfo" | grep "^Maximum mount count:" | perl -pi -e 's/^Maximum mount count:[\W]+//'`
+	nextcheckafter=`echo "$fsinfo" | grep "^Next check after:" | perl -pi -e 's/^Next check after:[\W]+//'`
+	timenextcheck=`date -d "$nextcheckafter" +%s`
+	timenow=`date +%s`
+
+        if [ "$nextcheckafter" = "" ]; then
+                checkduedate=0
+        elif [ "$timenow" -le "$timenextcheck" ]; then
+                checkduedate=0
+        else
+                checkduedate=1
+        fi
+
+	if [ "$mountcountmax" = "1" ]; then
+		checkduecount=0
+	elif [ "$mountcount" -lt "$mountcountmax" ]; then
+                checkduecount=0
+        else
+                checkduecount=1
+        fi
+
+        if [ "$status" = "ro" ]; then
+                rofs=1
+        else
+                rofs=0
+        fi
+
+	if [ "$timeout" -lt "180" ]; then
+		checktimeout=1
+	else
+		checktimeout=0
+	fi
+
+        echo -n " "$disk
+
+	if [ "$rofs" = "1" ]; then
+		EXITVAL=2
+		echo -n " ROFS"
+	elif [ "$checktimeout" = "1" ] ; then
+		if [ "$EXITVAL" = "0" ]; then
+			EXITVAL=1
+		fi
+		echo -n " SCSI-TIMEOUT"
+	elif [[ "$checkduecount" = "1" || "$checkduedate" = "1" ]]; then
+		if [ "$EXITVAL" = "0" ]; then
+			EXITVAL=1
+			echo -n " FSCK"
+		fi
+        else
+                echo -n " OK"
+        fi
+
+        if [ "$SHOWSTATS" = "1" ] || [ "$checkduecount" = "1" ]; then
+		if [ "$mountcountmax" != "1" ]; then
+	                echo -n " (mounted "$mountcount" of "$mountcountmax" max)"
+		else
+			echo -n " (unlimited mounts)"
+		fi
+	fi
+        if [ "$SHOWSTATS" = "1" ] || [ "$checkduedate" = "1" ]; then
+		if [ "$nextcheckafter" != "" ]; then
+	                echo -n " (due "$nextcheckafter")"
+		else
+			echo -n " (not scheduled for a fsck)"
+		fi
+        fi
+
+        if [ "$SHOWSTATS" = "1" ]; then
+                echo -n " (scsi timeout "$timeout")"
+	fi
+	echo -n ","
+done
+
+IFS=$OLDIFS
+exit $EXITVAL

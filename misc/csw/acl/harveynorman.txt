@@ -1,0 +1,82 @@
+interface Vlan319
+...
+ ip access-group CUSTFW-VL319-UP in
+ ip access-group CUSTFW-VL319-DOWN out
+...
+end
+
+
+
+no ip access-list extended CUSTFW-VL319-DOWN
+no ip access-list extended CUSTFW-VL319-UP
+
+ip access-list extended CUSTFW-VL319-DOWN
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+
+ !vpn addresses
+ permit ip 172.16.253.0 0.0.0.255 any
+
+ !outbound dns
+ permit udp host 119.47.119.240 eq domain host 119.47.126.121
+ permit udp host 119.47.119.241 eq domain host 119.47.126.121
+ permit tcp host 119.47.119.240 eq domain host 119.47.126.121 established
+ permit tcp host 119.47.119.241 eq domain host 119.47.126.121 established
+ !outbound ports
+ permit tcp any eq smtp host 119.47.126.121 established
+ permit tcp any eq www host 119.47.126.121 established
+ permit tcp any eq 443 host 119.47.126.121 established
+ 
+ !inbound ports
+ permit tcp host 202.89.43.31 host 119.47.126.121 eq 5666
+ permit tcp any host 119.47.126.121 eq www
+ permit tcp any host 119.47.126.121 eq 443
+ permit tcp any host 119.47.126.121 eq ftp
+ permit tcp any host 119.47.126.121 eq 25
+ permit tcp any host 119.47.126.121 eq 110
+ permit tcp any host 119.47.126.121 eq 465
+ permit tcp any host 119.47.126.121 eq 993
+
+ permit tcp any host 119.47.126.121 range 9500 9510
+ permit tcp any host 119.47.126.121 eq 22
+ permit tcp any host 119.47.126.121 eq 10000
+ deny   ip any any
+exit
+
+ip access-list extended CUSTFW-VL319-UP
+ permit udp any host 224.0.0.102 eq 1985
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+ !vpn addresses
+ permit ip any 172.16.253.0 0.0.0.255
+
+ !outbound dns
+ permit udp host 119.47.126.121 host 119.47.119.240 eq domain
+ permit udp host 119.47.126.121 host 119.47.119.241 eq domain
+ permit tcp host 119.47.126.121 host 119.47.119.240 eq domain
+ permit tcp host 119.47.126.121 host 119.47.119.241 eq domain
+ !outbound ports
+ permit tcp host 119.47.126.121 any eq smtp
+ permit tcp host 119.47.126.121 any eq www
+ permit tcp host 119.47.126.121 any eq 443
+ 
+ !inbound ports
+ permit tcp host 119.47.126.121 eq 5666 host 202.89.43.31 established
+ permit tcp host 119.47.126.121 eq www any established
+ permit tcp host 119.47.126.121 eq 443 any established
+ permit tcp host 119.47.126.121 eq 25 any established
+ permit tcp host 119.47.126.121 eq 465 any established
+ permit tcp host 119.47.126.121 eq 110 any established
+ permit tcp host 119.47.126.121 eq 993 any established
+ permit tcp host 119.47.126.121 eq ftp any established
+ permit tcp host 119.47.126.121 range 9500 9510 any established
+ permit tcp host 119.47.126.121 eq 22 any established
+ permit tcp host 119.47.126.121 eq 10000 any established
+ deny   ip any any
+exit
+end
