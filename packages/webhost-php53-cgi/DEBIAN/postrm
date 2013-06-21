@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ -f /etc/suphp/suphp.conf ] && [ "`grep -c "x-httpd-webhost-php53=" /etc/suphp/suphp.conf`" != "0" ]; then
-	sed -i '/x-httpd-webhost-php53=/d' /etc/suphp/suphp.conf
-fi
-
-if [ -f /etc/apache2/mods-available/suphp.conf ] && [ "`egrep -c "suPHP_AddHandler (application/x-httpd-webhost-php53|x-httpd-webhost-php53)$" /etc/apache2/mods-available/suphp.conf`" != "0" ]; then
-	sed -i '/suPHP_AddHandler \(application\/x-httpd-webhost-php53\|x-httpd-webhost-php53\)$/d' /etc/apache2/mods-available/suphp.conf
-fi

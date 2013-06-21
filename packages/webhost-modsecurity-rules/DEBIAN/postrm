@@ -1,5 +1,0 @@
-#!/bin/bash
-
-if [ -f "/etc/apache2/conf.d/security" ] && [ "`egrep -c '^Include "/etc/apache2/webhost-modsecurity.conf"' /etc/apache2/conf.d/security`" != "0" ]; then
-	sed -i '/^Include "\/etc\/apache2\/webhost-modsecurity.conf"/d' /etc/apache2/conf.d/security
-fi

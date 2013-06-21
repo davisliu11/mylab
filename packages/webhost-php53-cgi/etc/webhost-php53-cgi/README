@@ -1,3 +1,0 @@
-# webhost-php53-cgi package
-
-cgi-NAME configurations should be added to the package rather than each machine individually.  If more configurations are needed talk to Steve.

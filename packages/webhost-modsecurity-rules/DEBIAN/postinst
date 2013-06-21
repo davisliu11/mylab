@@ -1,6 +1,0 @@
-#!/bin/bash
-
-if [ -f "/etc/apache2/conf.d/security" ] && [ "`egrep -c '^Include "/etc/apache2/webhost-modsecurity.conf"' /etc/apache2/conf.d/security`" = "0" ]; then
-	echo 'Include "/etc/apache2/webhost-modsecurity.conf"' >> /etc/apache2/conf.d/security
-	echo "Install complete.  Please reload Apache to activate the Webhost Mod Security rules"
-fi

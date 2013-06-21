@@ -1,5 +1,0 @@
-# WEBHOST-MGMT-BASE: /etc/sudoers.d/nrpe-general
-Defaults:nagios !lecture
-Defaults:nagios !authenticate
-Defaults:nagios  log_year, logfile=/var/log/sudo.log
-# /WEBHOST-MGMT-BASE: /etc/sudoers.d/nrpe-general

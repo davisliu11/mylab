@@ -1,6 +1,0 @@
-#!/bin/bash
-
-if [ "$1" == "remove" ]; then
-	# Re-add restriction on SSH keys
-	sed -i 's/^ssh-/from="119.47.119.238,119.47.119.239" ssh-/' /home/webdrive/.ssh/authorized_keys
-fi

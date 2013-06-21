@@ -1,3 +1,0 @@
-# WEBHOST-MGMT-BASE: /etc/sudoers.d/nrpe-check_fs
-nagios ALL=NOPASSWD: /opt/webhost/nrpe/check_fs
-# /WEBHOST-MGMT-BASE: /etc/sudoers.d/nrpe-check_fs

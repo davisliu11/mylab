@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# Remove restrictions from authorized_keys file, so that ssh can be reached from srv/lbs
-sed -i 's/^from.*ssh-/ssh-/' /home/webdrive/.ssh/authorized_keys
-
-# Remove SSH password authentication
-sed -i '/PasswordAuthentication[ ]/ s/^.*/PasswordAuthentication no/' /etc/ssh/sshd_config
