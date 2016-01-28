@@ -18,7 +18,7 @@ pid=/var/run/shadowsocks.pid
 name='shadowsocks'
 
 start(){
-    nohup /usr/bin/python /usr/bin/ssserver -c $conf > /dev/null 2>&1 &
+    nohup /usr/bin/python /usr/local/bin/ssserver -c $conf > /dev/null 2>&1 &
     RETVAL=$?
     REPID=$!
     if [ "$RETVAL" = "0" ]; then
