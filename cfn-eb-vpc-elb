@@ -1,0 +1,435 @@
+{
+   "AWSTemplateFormatVersion":"2010-09-09",
+   "Description":"Template for creating a Elastic Beanstalk Environment in AWS Asurion VPC",
+   "Parameters":{
+      "VPC":{
+         "Description":"Asurion VPC to use.",
+         "Type":"AWS::EC2::VPC::Id"
+      },
+      "ExternalSubnets":{
+         "Description":"Comma-delimited list of three SubnetIDs from different AZs",
+         "Type":"String",
+         "Default": "subnet-9a160bed,subnet-6a6b9b0e"
+      },
+      "InternalSubnets":{
+         "Description":"Comma-delimited list of three SubnetIDs from different AZs",
+         "Type":"String",
+         "Default":"subnet-ec524e9b,subnet-879363e3"
+      },
+      "Subnets":{
+         "Description":"Select ExternalSubnets or InternalSubnets",
+         "Type":"String",
+         "Default":"ExternalSubnets",
+         "AllowedValues":[
+            "ExternalSubnets",
+            "InternalSubnets"
+         ],
+         "ConstraintDescription":"Must be either ExternalSubnets or InternalSubnets"
+      },
+      "ELBSubnets":{
+         "Description":"Select ExternalSubnets or InternalSubnets",
+         "Type":"String",
+         "Default":"ExternalSubnets",
+         "AllowedValues":[
+            "ExternalSubnets",
+            "InternalSubnets"
+         ],
+         "ConstraintDescription":"Must be either ExternalSubnets or InternalSubnets"
+      },
+      "AssociatePublicIP":{
+         "Description":"Select true or false",
+         "Type":"String",
+         "Default":"true",
+         "AllowedValues":[
+            "true",
+            "false"
+         ],
+         "ConstraintDescription":"Must be either true or false"
+      },
+      "InstanceKeyName":{
+         "Description":"AWS EC2 key pair to use when creating Beanstalk instances",
+         "Type":"AWS::EC2::KeyPair::KeyName"
+      },
+      "InstanceType":{
+         "Description":"Beanstalk Host EC2 instance type",
+         "Type":"String",
+         "Default":"t2.micro",
+         "AllowedValues":[
+            "t1.micro",
+            "t2.micro",
+            "t2.small",
+            "t2.medium",
+            "m1.small",
+            "m1.medium",
+            "m1.large",
+            "m1.xlarge",
+            "m2.xlarge",
+            "m2.2xlarge",
+            "m2.4xlarge",
+            "m3.medium",
+            "m3.large",
+            "m3.xlarge",
+            "m3.2xlarge",
+            "c1.medium",
+            "c1.xlarge",
+            "c3.large",
+            "c3.xlarge",
+            "c3.2xlarge",
+            "c3.4xlarge",
+            "c3.8xlarge",
+            "g2.2xlarge",
+            "r3.large",
+            "r3.xlarge",
+            "r3.2xlarge",
+            "r3.4xlarge",
+            "r3.8xlarge",
+            "i2.xlarge",
+            "i2.2xlarge",
+            "i2.4xlarge",
+            "i2.8xlarge",
+            "hi1.4xlarge",
+            "hs1.8xlarge",
+            "cr1.8xlarge",
+            "cc2.8xlarge",
+            "cg1.4xlarge"
+         ],
+         "ConstraintDescription":"Must be a valid EC2 instance type."
+      },
+      "BeanstalkURLPrefix":{
+         "Description":"Beanstalk Application URL prefix. Example: cgwtxtwebhookdev-bs",
+         "Type":"String",
+         "MinLength":"4",
+         "MaxLength":"23",
+         "AllowedPattern":"[a-zA-Z0-9-]+",
+         "ConstraintDescription":"Must be from 4 to 23 characters in length, can contain only letters, numbers, and hyphens, and cannot start or end with a hyphen"
+      },
+      "BeanstalkAppName":{
+         "Description":"Beanstalk Application Name. Example: CGW-TXT-WEBHOOK",
+         "Type":"String",
+         "MinLength":"4",
+         "MaxLength":"23",
+         "AllowedPattern":"[a-zA-Z0-9-]+",
+         "ConstraintDescription":"Must be from 4 to 23 characters in length, can contain only letters, numbers, and hyphens, and cannot start or end with a hyphen"
+      },
+      "BeanstalkAppDesc":{
+         "Type":"String",
+         "AllowedPattern":"[a-zA-Z]+",
+         "MaxLength":"50",
+         "Description":"Enter beanstalk application description with alpha characters only",
+         "ConstraintDescription":"Must only contain upper and lower case letters"
+      },
+      "IamInstanceProfile":{
+         "Description":"Enter the IAM Role. Example: COMMUNICATION_GATEWAY_TXTREGISTRATION",
+         "Type":"String",
+         "ConstraintDescription":"Must be a valid IAM Role"
+      },
+      "OperatorEmail":{
+         "Default":"admin@example.com",
+         "Description":"Email address to notify if there are any operational issues",
+         "Type":"String"
+      },
+      "SolutionStackName":{
+         "Description":"Beanstalk Solution Stack Name",
+         "Type":"String",
+         "Default":"64bit Amazon Linux 2016.03 v2.1.2 running PHP 5.6",
+         "AllowedValues":[
+            "64bit Amazon Linux 2016.03 v2.1.1 running Java 8",
+            "64bit Amazon Linux 2016.03 v2.1.1 running Java 7",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Java 8",
+            "64bit Amazon Linux 2015.09 v2.0.8 running Java 8",
+            "64bit Amazon Linux 2015.09 v2.0.8 running Java 7",
+            "64bit Amazon Linux 2015.09 v2.0.6 running Java 8",
+            "64bit Amazon Linux 2015.09 v2.0.6 running Java 7",
+            "64bit Amazon Linux 2016.03 v2.1.1 running Node.js",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Node.js",
+            "64bit Amazon Linux 2015.09 v2.0.8 running Node.js",
+            "64bit Amazon Linux 2015.09 v2.0.7 running Node.js",
+            "64bit Amazon Linux 2015.09 v2.0.6 running Node.js",
+            "64bit Amazon Linux 2015.09 v2.0.4 running Node.js",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Node.js",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Node.js",
+            "32bit Amazon Linux 2014.03 v1.1.0 running Node.js",
+            "64bit Amazon Linux 2016.03 v2.1.2 running PHP 5.4",
+            "64bit Amazon Linux 2016.03 v2.1.2 running PHP 5.5",
+            "64bit Amazon Linux 2016.03 v2.1.2 running PHP 5.6",
+            "64bit Amazon Linux 2015.09 v2.0.8 running PHP 5.6",
+            "64bit Amazon Linux 2015.09 v2.0.7 running PHP 5.6",
+            "64bit Amazon Linux 2015.09 v2.0.6 running PHP 5.6",
+            "64bit Amazon Linux 2015.03 v1.4.6 running PHP 5.6",
+            "64bit Amazon Linux 2015.03 v1.4.6 running PHP 5.5",
+            "64bit Amazon Linux 2015.03 v1.4.6 running PHP 5.4",
+            "64bit Amazon Linux 2014.03 v1.1.0 running PHP 5.5",
+            "64bit Amazon Linux 2014.03 v1.1.0 running PHP 5.4",
+            "32bit Amazon Linux 2014.03 v1.1.0 running PHP 5.5",
+            "32bit Amazon Linux 2014.03 v1.1.0 running PHP 5.4",
+            "64bit Amazon Linux running PHP 5.3",
+            "32bit Amazon Linux running PHP 5.3",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Python 3.4",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Python",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Python 2.7",
+            "64bit Amazon Linux 2015.09 v2.0.8 running Python 3.4",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Python 3.4",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Python 2.7",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Python",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Python 2.7",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Python",
+            "32bit Amazon Linux 2014.03 v1.1.0 running Python 2.7",
+            "32bit Amazon Linux 2014.03 v1.1.0 running Python",
+            "64bit Amazon Linux running Python",
+            "32bit Amazon Linux running Python",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.3 (Puma)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.2 (Puma)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.1 (Puma)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.0 (Puma)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.3 (Passenger Standalone)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.2 (Passenger Standalone)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.1 (Passenger Standalone)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 2.0 (Passenger Standalone)",
+            "64bit Amazon Linux 2016.03 v2.1.2 running Ruby 1.9.3",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Ruby 2.2 (Puma)",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Ruby 2.2 (Passenger Standalone)",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Ruby 2.1 (Puma)",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Ruby 2.1 (Passenger Standalone)",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Ruby 2.0 (Puma)",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Ruby 2.0 (Passenger Standalone)",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Ruby 1.9.3",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Ruby 2.1 (Puma)",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Ruby 2.1 (Passenger Standalone)",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Ruby 2.0 (Puma)",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Ruby 2.0 (Passenger Standalone)",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Ruby 1.9.3",
+            "32bit Amazon Linux 2014.03 v1.1.0 running Ruby 1.9.3",
+            "64bit Amazon Linux 2016.03 v2.1.1 running Tomcat 8 Java 8",
+            "64bit Amazon Linux 2016.03 v2.1.1 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2016.03 v2.1.1 running Tomcat 7 Java 6",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Tomcat 8 Java 8",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2015.09 v2.0.8 running Tomcat 8 Java 8",
+            "64bit Amazon Linux 2015.09 v2.0.8 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2015.09 v2.0.7 running Tomcat 8 Java 8",
+            "64bit Amazon Linux 2015.09 v2.0.7 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2015.09 v2.0.6 running Tomcat 8 Java 8",
+            "64bit Amazon Linux 2015.09 v2.0.6 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2015.09 v2.0.4 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2015.03 v2.0.1 running Tomcat 8 Java 8",
+            "64bit Amazon Linux 2015.03 v2.0.1 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2015.03 v1.4.5 running Tomcat 8 Java 8",
+            "64bit Amazon Linux 2015.03 v1.4.5 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2015.03 v1.4.5 running Tomcat 7 Java 6",
+            "64bit Amazon Linux 2015.03 v1.4.4 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Tomcat 7 Java 7",
+            "64bit Amazon Linux 2014.03 v1.1.0 running Tomcat 7 Java 6",
+            "32bit Amazon Linux 2014.03 v1.1.0 running Tomcat 7 Java 7",
+            "32bit Amazon Linux 2014.03 v1.1.0 running Tomcat 7 Java 6",
+            "64bit Amazon Linux running Tomcat 7",
+            "64bit Amazon Linux running Tomcat 6",
+            "32bit Amazon Linux running Tomcat 7",
+            "32bit Amazon Linux running Tomcat 6",
+            "64bit Windows Server Core 2012 R2 v1.1.0 running IIS 8.5",
+            "64bit Windows Server Core 2012 R2 running IIS 8.5",
+            "64bit Windows Server 2012 R2 running IIS 8.5",
+            "64bit Windows Server 2012 running IIS 8",
+            "64bit Windows Server 2008 R2 running IIS 7.5",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Docker 1.9.1",
+            "64bit Amazon Linux 2015.09 v2.0.7 running Docker 1.9.1",
+            "64bit Amazon Linux 2015.09 v2.0.6 running Docker 1.7.1",
+            "64bit Amazon Linux 2015.09 v2.0.4 running Docker 1.7.1",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Docker 1.6.2",
+            "64bit Amazon Linux 2016.03 v2.1.1 running Multi-container Docker 1.9.1 (Generic)",
+            "64bit Amazon Linux 2015.03 v1.4.6 running Multi-container Docker 1.6.2 (Generic)",
+            "64bit Debian jessie v2.1.0 running GlassFish 4.1 Java 8 (Preconfigured - Docker)",
+            "64bit Debian jessie v2.1.0 running GlassFish 4.0 Java 7 (Preconfigured - Docker)",
+            "64bit Debian jessie v1.4.6 running GlassFish 4.1 Java 8 (Preconfigured - Docker)",
+            "64bit Debian jessie v1.4.6 running GlassFish 4.0 Java 7 (Preconfigured - Docker)",
+            "64bit Debian jessie v2.1.0 running Go 1.4 (Preconfigured - Docker)",
+            "64bit Debian jessie v2.1.0 running Go 1.3 (Preconfigured - Docker)",
+            "64bit Debian jessie v1.4.6 running Go 1.4 (Preconfigured - Docker)",
+            "64bit Debian jessie v1.4.6 running Go 1.3 (Preconfigured - Docker)",
+            "64bit Debian jessie v2.1.0 running Python 3.4 (Preconfigured - Docker)",
+            "64bit Debian jessie v1.4.6 running Python 3.4 (Preconfigured - Docker)",
+            "64bit Windows Server 2012 R2 v1.1.0 running IIS 8.5",
+            "64bit Windows Server 2012 v1.1.0 running IIS 8",
+            "64bit Windows Server 2008 R2 v1.1.0 running IIS 7.5",
+            "64bit Amazon Linux 2016.03 v2.1.0 running Go 1.4"
+         ],
+         "ConstraintDescription":"Must be a valid Solution Stack Name"
+      }
+   },
+   "Conditions":{
+      "SubnetRange":{
+         "Fn::Equals":[
+            {
+               "Ref":"Subnets"
+            },
+            "ExternalSubnets"
+         ]
+      },
+      "ELBSubnetRange":{
+         "Fn::Equals":[
+            {
+               "Ref":"ELBSubnets"
+            },
+            "ExternalSubnets"
+         ]
+      }
+   },
+   "Resources":{
+      "sampleApplication":{
+         "Type": "AWS::ElasticBeanstalk::Application",
+         "Properties": {
+           "Description": "AWS Elastic Beanstalk Sample Application"
+         }
+       },
+       "sampleApplicationVersion": {
+         "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+         "Properties": {
+           "ApplicationName": { "Ref": "sampleApplication" },
+           "Description": "AWS ElasticBeanstalk Sample Application Version",
+           "SourceBundle": {
+             "S3Bucket": { "Fn::Join": [ "-", [ "elasticbeanstalk-samples", { "Ref": "AWS::Region" } ] ] },
+             "S3Key": "php-sample.zip"
+           }
+         }
+      },
+
+      "BeanstalkEnvironment":{
+         "Type":"AWS::ElasticBeanstalk::Environment",
+         "Properties":{
+            "ApplicationName":{
+               "Ref":"sampleApplication"
+            },
+            "Description":"AWS Elastic Beanstalk Environment running Sample Application",
+            "SolutionStackName":{
+               "Ref":"SolutionStackName"
+            },
+            "EnvironmentName":{
+               "Ref":"BeanstalkURLPrefix"
+            },
+            "CNAMEPrefix":{
+               "Ref":"BeanstalkURLPrefix"
+            },
+            "OptionSettings":[
+               {
+                  "Namespace":"aws:autoscaling:launchconfiguration",
+                  "OptionName":"EC2KeyName",
+                  "Value":{
+                     "Ref":"InstanceKeyName"
+                  }
+               },
+               {
+                  "Namespace":"aws:ec2:vpc",
+                  "OptionName":"VPCId",
+                  "Value":{
+                     "Ref":"VPC"
+                  }
+               },
+               {
+                  "Namespace":"aws:ec2:vpc",
+                  "OptionName":"Subnets",
+                  "Value":{
+                     "Fn::If":[
+                        "SubnetRange",
+                        {
+                           "Ref":"ExternalSubnets"
+                        },
+                        {
+                           "Ref":"InternalSubnets"
+                        }
+                     ]
+                  }
+               },
+               {
+                  "Namespace":"aws:ec2:vpc",
+                  "OptionName":"ELBSubnets",
+                  "Value":{
+                     "Fn::If":[
+                        "ELBSubnetRange",
+                        {
+                           "Ref":"ExternalSubnets"
+                        },
+                        {
+                           "Ref":"InternalSubnets"
+                        }
+                     ]
+                  }
+               },
+               {
+                  "Namespace":"aws:ec2:vpc",
+                  "OptionName":"AssociatePublicIpAddress",
+                  "Value":{
+                     "Ref":"AssociatePublicIP"
+                  }
+               },
+               {
+                  "Namespace":"aws:autoscaling:updatepolicy:rollingupdate",
+                  "OptionName":"MaxBatchSize",
+                  "Value":"1"
+               },
+               {
+                  "Namespace":"aws:autoscaling:updatepolicy:rollingupdate",
+                  "OptionName":"MinInstancesInService",
+                  "Value":"1"
+               },
+               {
+                  "Namespace":"aws:autoscaling:updatepolicy:rollingupdate",
+                  "OptionName":"RollingUpdateEnabled",
+                  "Value":"true"
+               },
+               {
+                  "Namespace":"aws:elasticbeanstalk:command",
+                  "OptionName":"BatchSize",
+                  "Value":"1"
+               },
+               {
+                  "Namespace":"aws:elasticbeanstalk:command",
+                  "OptionName":"BatchSizeType",
+                  "Value":"Fixed"
+               },
+               {
+                  "Namespace":"aws:elb:policies",
+                  "OptionName":"ConnectionDrainingEnabled",
+                  "Value":"true"
+               },
+               {
+                  "Namespace":"aws:elb:policies",
+                  "OptionName":"Stickiness Cookie Expiration",
+                  "Value":"0"
+               },
+               {
+                  "Namespace":"aws:elb:policies",
+                  "OptionName":"Stickiness Policy",
+                  "Value":"false"
+               },
+               {
+                  "Namespace":"aws:autoscaling:launchconfiguration",
+                  "OptionName":"IamInstanceProfile",
+                  "Value":{
+                     "Ref":"IamInstanceProfile"
+                  }
+               },
+               {
+                  "Namespace":"aws:elasticbeanstalk:environment",
+                  "OptionName":"ServiceRole",
+                  "Value":"aws-elasticbeanstalk-service-role"
+               },
+               {
+                  "Namespace":"aws:autoscaling:asg",
+                  "OptionName":"MinSize",
+                  "Value":"3"
+               },
+               {
+                  "Namespace":"aws:autoscaling:asg",
+                  "OptionName":"MaxSize",
+                  "Value":"4"
+               },
+               {
+                  "Namespace":"aws:elasticbeanstalk:healthreporting:system",
+                  "OptionName":"SystemType",
+                  "Value":"enhanced"
+               }
+            ],
+            "VersionLabel": { "Ref": "sampleApplicationVersion" }
+         }
+      }
+   }
+}
